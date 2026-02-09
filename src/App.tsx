@@ -36,6 +36,7 @@ import {
   useComposeRare,
   useComposeLegend,
   useLegendTokenIdsByRound,
+  useLegendTokenIdsByRounds,
   useLuckyTokenIds,
   useLuckyRewardInfos,
   useLegendRewardInfos,
@@ -110,14 +111,21 @@ export default function App() {
     5000
   );
   const { data: currentRound } = useCurrentRound(5000);
-  const { data: legendTokenIds, refetch: refetchLegendTokenIds } = useLegendTokenIdsByRound(
-    typeof currentRound === "bigint" ? currentRound : undefined,
+  const legendRounds = useMemo(() => {
+    if (typeof currentRound !== "bigint") {
+      return [];
+    }
+    const total = Number(currentRound);
+    if (!Number.isFinite(total) || total < 0) {
+      return [];
+    }
+    return Array.from({ length: total + 1 }, (_, i) => BigInt(i));
+  }, [currentRound]);
+  const { allTokenIds: legendTokenIds, refetch: refetchLegendTokenIds } = useLegendTokenIdsByRounds(
+    legendRounds,
     5000
   );
-  const { rewards: legendRewards, refetch: refetchLegendRewards } = useLegendRewardInfos(
-    Array.isArray(legendTokenIds) ? legendTokenIds : [],
-    5000
-  );
+  const { rewards: legendRewards, refetch: refetchLegendRewards } = useLegendRewardInfos(legendTokenIds, 5000);
   const { claimLuckyReward } = useClaimLuckyReward();
 
   // Game State
@@ -233,7 +241,9 @@ export default function App() {
     const redPacketCount = luckyRewards.filter(
       (item) => item.owner?.toLowerCase() === addr && !item.claimed
     ).length;
-    const supremeCount = legendRewards.filter((item) => item.owner?.toLowerCase() === addr).length;
+    const supremeCount = legendRewards.filter(
+      (item) => item.owner?.toLowerCase() === addr && !item.claimed
+    ).length;
     setCards([
       { type: 'supreme', name: '至尊马', count: supremeCount },
       { type: 'red_packet', name: '红包马', count: redPacketCount },
