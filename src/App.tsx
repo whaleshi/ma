@@ -230,7 +230,9 @@ export default function App() {
       : [0, 0, 0, 0];
     const [careerCount, loveCount, wealthCount, luckCount] = balanceValues;
     const addr = address?.toLowerCase() ?? '';
-    const redPacketCount = luckyRewards.filter((item) => item.owner?.toLowerCase() === addr).length;
+    const redPacketCount = luckyRewards.filter(
+      (item) => item.owner?.toLowerCase() === addr && !item.claimed
+    ).length;
     const supremeCount = legendRewards.filter((item) => item.owner?.toLowerCase() === addr).length;
     setCards([
       { type: 'supreme', name: '至尊马', count: supremeCount },
