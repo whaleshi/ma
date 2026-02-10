@@ -24,6 +24,11 @@ import { decodeTokenId } from './utils/decodeTokenId';
 import { useAccount } from "wagmi";
 import { formatEther } from 'viem';
 import supremeImg from 'figma:asset/6651fc0c90390d131f74b014994be51852a71a59.png';
+import redPacketImg from 'figma:asset/d19a2f3c21c67ce076c2a24d0e2058e33ea5a8a2.png';
+import luckImg from 'figma:asset/876972c509561235a14234ebaeb8a04d4c2f28ae.png';
+import wealthImg from 'figma:asset/3e8ed8b84fe45c8898c2deea5cd3d6495bd61c69.png';
+import careerImg from 'figma:asset/3c55e552361dae32ba73beaddae94fa841d4caaa.png';
+import loveImg from 'figma:asset/3e75ed55595146a6ff7fa1a65e6413528470f471.png';
 import { useReferral } from './contexts/ReferralContext';
 import {
   parseNftAwardedFromReceipt,
@@ -247,6 +252,14 @@ export default function App() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isScrolled]);
+
+  useEffect(() => {
+    const sources = [supremeImg, redPacketImg, luckImg, wealthImg, careerImg, loveImg];
+    sources.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   useEffect(() => {
     const balanceValues = balances && balances.length > 0
