@@ -66,6 +66,10 @@ const GlobalStyles = () => (
       animation: shimmer 4s linear infinite;
       will-change: background-position;
     }
+    @keyframes particle {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+      50% { transform: translateY(-6px) scale(1.1); opacity: 1; }
+    }
     body {
       font-family: 'MiSans', system-ui, -apple-system, sans-serif !important;
       -webkit-tap-highlight-color: transparent;
@@ -164,6 +168,36 @@ export default function App() {
   const baseFreeDraws = typeof chainFreeDraws === "bigint" ? Number(chainFreeDraws) : 0;
   const referralFreeDraws = typeof earnedFreeDraws === "bigint" ? Number(earnedFreeDraws) : 0;
   const totalFreeDraws = baseFreeDraws + referralFreeDraws;
+  const formatSmall = (value: string) => {
+    if (!value.startsWith('0.')) {
+      return value;
+    }
+    const decimals = value.slice(2);
+    if (!decimals || /^0+$/.test(decimals)) {
+      return '0';
+    }
+    const match = decimals.match(/^(0+)([1-9].*)$/);
+    if (!match) {
+      return value;
+    }
+    const zeroCount = match[1].length;
+    const rest = match[2].slice(0, 3);
+    if (zeroCount <= 1) {
+      return value;
+    }
+    const map = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'];
+    const subscript = String(zeroCount)
+      .split('')
+      .map((digit) => map[Number(digit)] ?? digit)
+      .join('');
+    return `0.0${subscript}${rest}`;
+  };
+  const entryFeeDisplay = useMemo(() => {
+    return typeof entryFee === "bigint" ? formatEther(entryFee) : '--';
+  }, [entryFee]);
+  const tenFeeDisplay = useMemo(() => {
+    return typeof entryFee === "bigint" ? formatEther(entryFee * 10n) : '--';
+  }, [entryFee]);
   const pendingRedPacketRewards = useMemo(() => {
     if (pendingRedPacketTokenIds.length === 0) {
       return [];
@@ -188,30 +222,6 @@ export default function App() {
   const pendingRedPacketTotalWei = useMemo(() => {
     return pendingRedPacketRewards.reduce((sum, item) => sum + item.rewardAmount, 0n);
   }, [pendingRedPacketRewards]);
-  const formatSmall = (value: string) => {
-    if (!value.startsWith('0.')) {
-      return value;
-    }
-    const decimals = value.slice(2);
-    if (!decimals || /^0+$/.test(decimals)) {
-      return '0';
-    }
-    const match = decimals.match(/^(0+)([1-9].*)$/);
-    if (!match) {
-      return value;
-    }
-    const zeroCount = match[1].length;
-    const rest = match[2].slice(0, 3);
-    if (zeroCount <= 1) {
-      return value;
-    }
-    const subscriptMap = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'];
-    const subscript = String(zeroCount)
-      .split('')
-      .map((digit) => subscriptMap[Number(digit)] ?? digit)
-      .join('');
-    return `0.0${subscript}${rest}`;
-  };
   const redPacketDisplayAmount = useMemo(() => {
     return formatSmall(formatEther(pendingRedPacketTotalWei));
   }, [pendingRedPacketTotalWei]);
@@ -678,7 +688,12 @@ export default function App() {
 
                 {/* Desktop: Draw Buttons inside the card container */}
                 <div className="hidden md:block mt-4 pt-4 border-t border-white/10">
-                  <DrawFooter onDraw={handleDraw} canPaidDraw={totalFreeDraws === 0} />
+                  <DrawFooter
+                    onDraw={handleDraw}
+                    canPaidDraw={totalFreeDraws === 0}
+                    singleCost={entryFeeDisplay}
+                    tenCost={tenFeeDisplay}
+                  />
                 </div>
               </div>
             </div>
@@ -695,7 +710,12 @@ export default function App() {
 
       {/* Mobile Sticky Footer */}
       <div className="md:hidden">
-        <DrawFooter onDraw={handleDraw} canPaidDraw={totalFreeDraws === 0} />
+        <DrawFooter
+          onDraw={handleDraw}
+          canPaidDraw={totalFreeDraws === 0}
+          singleCost={entryFeeDisplay}
+          tenCost={tenFeeDisplay}
+        />
       </div>
 
       {/* Modals */}

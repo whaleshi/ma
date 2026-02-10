@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CardType } from '../App';
+import { formatEther } from 'viem';
+import { useRevenue2 } from '../hooks/useLotteryContract';
 import { X } from 'lucide-react';
 import { playSpinSound, playWinSound } from '../utils/soundEffects';
 import supremeImg from 'figma:asset/6651fc0c90390d131f74b014994be51852a71a59.png';
@@ -48,6 +50,7 @@ const spinCards: CardType[] = ['love', 'career', 'luck', 'wealth', 'red_packet']
 export function DrawModal({ isOpen, onClose, results }: DrawModalProps) {
   const [stage, setStage] = useState<'opening' | 'revealed'>('opening');
   const [spinIndex, setSpinIndex] = useState(0);
+  const { data: revenue2 } = useRevenue2(5000);
 
   useEffect(() => {
     if (isOpen) {
@@ -83,6 +86,31 @@ export function DrawModal({ isOpen, onClose, results }: DrawModalProps) {
     }));
   }, [results]);
   const hasRedPacket = results.includes('red_packet');
+  const formatSmall = (value: string) => {
+    if (!value.startsWith('0.')) {
+      return value;
+    }
+    const decimals = value.slice(2);
+    if (!decimals || /^0+$/.test(decimals)) {
+      return '0';
+    }
+    const match = decimals.match(/^(0+)([1-9].*)$/);
+    if (!match) {
+      return value;
+    }
+    const zeroCount = match[1].length;
+    const rest = match[2].slice(0, 3);
+    if (zeroCount <= 1) {
+      return value;
+    }
+    const map = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'];
+    const subscript = String(zeroCount)
+      .split('')
+      .map((digit) => map[Number(digit)] ?? digit)
+      .join('');
+    return `0.0${subscript}${rest}`;
+  };
+  const redPacketPool = typeof revenue2 === 'bigint' ? formatSmall(formatEther(revenue2)) : '--';
 
   const currentSpinCard = spinCards[spinIndex];
 
@@ -155,10 +183,15 @@ export function DrawModal({ isOpen, onClose, results }: DrawModalProps) {
                   <motion.div
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative z-10 mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-[#ff000e]/20 bg-[#ff000e]/10 px-4 py-1 text-[#c4000b] text-xs font-black tracking-widest"
+                    className="relative z-10 mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-[#ff000e]/30 bg-gradient-to-r from-[#ff000e]/10 via-[#ffd1a8]/20 to-[#ff000e]/10 px-4 py-1 text-[#c4000b] text-xs font-black tracking-widest shadow-[0_0_20px_rgba(255,0,14,0.15)] overflow-hidden"
                   >
-                    <span className="inline-block h-2 w-2 rounded-full bg-[#ff000e] animate-pulse" />
-                    差一点就抽中红包马
+                    <span className="absolute -left-2 -top-2 h-3 w-3 rounded-full bg-[#ffd89b]/80 blur-[1px] animate-[particle_3s_ease-in-out_infinite]" />
+                    <span className="absolute right-4 -top-1 h-2 w-2 rounded-full bg-[#ff000e]/70 blur-[0.5px] animate-[particle_2.6s_ease-in-out_infinite]" />
+                    <span className="absolute right-2 -bottom-2 h-3 w-3 rounded-full bg-[#fff2c7]/70 blur-[1px] animate-[particle_3.4s_ease-in-out_infinite]" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full animate-shine" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#ff000e] animate-pulse" />
+                    <span className="relative">差一点就抽中红包马</span>
+                    <span className="relative text-[#8b0000] font-extrabold">红包奖池 {redPacketPool} BNB</span>
                   </motion.div>
                 )}
                 
