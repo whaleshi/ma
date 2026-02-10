@@ -5,10 +5,10 @@ import { getDefaultConfig, lightTheme, RainbowKitProvider } from "@rainbow-me/ra
 import { binanceWallet, metaMaskWallet, okxWallet } from "@rainbow-me/rainbowkit/wallets";
 import { createRoot } from "react-dom/client";
 import { WagmiProvider } from "wagmi";
-import { bscTestnet } from "wagmi/chains";
 import App from "./App";
 import "./index.css";
 import { ReferralProvider } from "./contexts/ReferralContext";
+import { CURRENT_CHAIN } from "./config/network";
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
@@ -19,7 +19,7 @@ if (!projectId) {
 const config = getDefaultConfig({
   appName: "Horse 发生",
   projectId,
-  chains: [bscTestnet],
+  chains: [CURRENT_CHAIN],
   wallets: [
     {
       groupName: "推荐钱包",

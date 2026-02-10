@@ -1,2 +1,5 @@
-export const CONTRACT_ADDRESS = "0xd76d236967ed5C432e5baBC2588aFFE2e0C38768";
-export const REFERRAL_CONTRACT = "0x2E5Afd022Ba38Eb2357b42E3cc0d11c4e4177dD1";
+import { CURRENT_ADDRESSES } from "../config/network";
+
+// Export current environment addresses
+export const CONTRACT_ADDRESS = CURRENT_ADDRESSES.LOTTERY;
+export const REFERRAL_CONTRACT = CURRENT_ADDRESSES.REFERRAL;
