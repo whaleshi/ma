@@ -114,6 +114,15 @@ export default async function handler(req: Request) {
   const title = safeText(meta.title, '集马卡赢奖池');
   const subtitle = safeText(meta.subtitle, '抽红包马、合成至尊马');
   const amountText = amount ? formatSmall(amount) : null;
+  let imageData: ArrayBuffer | null = null;
+  try {
+    const imageRes = await fetch(meta.image);
+    if (imageRes.ok) {
+      imageData = await imageRes.arrayBuffer();
+    }
+  } catch {
+    imageData = null;
+  }
 
   return new ImageResponse(
     (
@@ -163,7 +172,7 @@ export default async function handler(req: Request) {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={meta.image} width="300" height="300" />
+            {imageData ? <img src={imageData} width="300" height="300" /> : null}
           </div>
         </div>
       </div>
