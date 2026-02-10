@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/og.tsx": {
+      "runtime": "edge"
+    },
+    "api/share.ts": {
+      "runtime": "edge"
+    }
+  }
+}
