@@ -90,7 +90,7 @@ export function PrizePool({ redPacketPool, superPool, onOpenWinnerHistory }: Pri
           <div className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-gradient-to-tr from-transparent via-white/10 to-transparent rotate-12 animate-[sheen_4s_linear_infinite] pointer-events-none" />
 
           <div className="text-[#ffd0d0] text-[10px] md:text-xs font-bold mb-1 tracking-widest uppercase opacity-80 whitespace-nowrap">红包奖池</div>
-          <div className="text-white text-2xl md:text-3xl font-black mb-1.5 md:mb-2 drop-shadow-md tracking-tight">{formatSmall(redPacketDisplay)} BNB</div>
+          <div className="text-white text-2xl md:text-3xl font-black mb-1.5 md:mb-2 drop-shadow-md tracking-tight text-center">{formatSmall(redPacketDisplay)} BNB</div>
           <div className="text-white/90 text-[10px] font-bold bg-black/20 px-2 py-0.5 md:px-3 md:py-1 rounded-full backdrop-blur-sm border border-white/10 whitespace-nowrap scale-90 md:scale-100 origin-center">下一个红包马独享</div>
         </div>
 
@@ -102,7 +102,7 @@ export function PrizePool({ redPacketPool, superPool, onOpenWinnerHistory }: Pri
           <div className="absolute top-0 left-0 w-full h-[1px] bg-white/60"></div>
 
           <div className="text-[#5c0000] text-[10px] md:text-xs font-bold mb-1 tracking-widest uppercase opacity-70 whitespace-nowrap">超级大奖</div>
-          <div className="text-[#5c0000] text-2xl md:text-3xl font-black mb-1.5 md:mb-2 drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] tracking-tight">{formatSmall(superDisplay)} BNB</div>
+          <div className="text-[#5c0000] text-2xl md:text-3xl font-black mb-1.5 md:mb-2 drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] tracking-tight text-center">{formatSmall(superDisplay)} BNB</div>
           <div className="text-[#5c0000] text-[10px] font-bold bg-white/20 px-2 py-0.5 md:px-3 md:py-1 rounded-full backdrop-blur-sm border border-white/20 whitespace-nowrap scale-90 md:scale-100 origin-center">2 月 17 日 20:00 开奖</div>
         </div>
       </div>
