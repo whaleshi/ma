@@ -4,6 +4,24 @@ export const config = {
   runtime: 'edge',
 };
 
+let fontCache: ArrayBuffer | null = null;
+
+const getFontData = async (fontUrl: string) => {
+  if (fontCache) {
+    return fontCache;
+  }
+  try {
+    const response = await fetch(fontUrl);
+    if (!response.ok) {
+      return new ArrayBuffer(0);
+    }
+    fontCache = await response.arrayBuffer();
+    return fontCache;
+  } catch {
+    return new ArrayBuffer(0);
+  }
+};
+
 const ogSize = {
   width: 1200,
   height: 630,
@@ -52,6 +70,9 @@ export default async function handler(req: Request) {
   const type = searchParams.get('type') ?? 'default';
   const amount = searchParams.get('amount');
   const origin = getOrigin(req);
+  const fontUrl =
+    'https://cdn.jsdelivr.net/gh/googlefonts/noto-cjk@main/Sans/OTF/SimplifiedChinese/NotoSansSC-Bold.otf';
+  const fontData = await getFontData(fontUrl);
 
   const cards: Record<string, { title: string; subtitle: string; image: string; accent: string }> = {
     career: {
@@ -114,16 +135,6 @@ export default async function handler(req: Request) {
   const title = safeText(meta.title, '集马卡赢奖池');
   const subtitle = safeText(meta.subtitle, '抽红包马、合成至尊马');
   const amountText = amount ? formatSmall(amount) : null;
-  let imageData: ArrayBuffer | null = null;
-  try {
-    const imageRes = await fetch(meta.image);
-    if (imageRes.ok) {
-      imageData = await imageRes.arrayBuffer();
-    }
-  } catch {
-    imageData = null;
-  }
-
   return new ImageResponse(
     (
       <div
@@ -134,21 +145,12 @@ export default async function handler(req: Request) {
           flexDirection: 'column',
           justifyContent: 'center',
           padding: '60px',
-          background: 'linear-gradient(135deg, #5c0000 0%, #2a0a0a 45%, #1a0a0a 100%)',
+          backgroundColor: '#2a0a0a',
           color: '#fff9f0',
-          fontFamily: 'Arial, sans-serif',
-          position: 'relative',
-          overflow: 'hidden',
+          fontFamily: 'Noto Sans SC, Arial, sans-serif',
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: `radial-gradient(circle at 20% 20%, ${meta.accent}33, transparent 55%), radial-gradient(circle at 80% 80%, #ffffff22, transparent 55%)`,
-          }}
-        />
-        <div style={{ display: 'flex', gap: '40px', alignItems: 'center', position: 'relative' }}>
+        <div style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 60, fontWeight: 800, lineHeight: 1.05 }}>{title}</div>
             <div style={{ marginTop: 16, fontSize: 28, color: '#FAE6B1' }}>{subtitle}</div>
@@ -172,11 +174,21 @@ export default async function handler(req: Request) {
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            {imageData ? <img src={imageData} width="300" height="300" /> : null}
+            <img src={meta.image} width="300" height="300" />
           </div>
         </div>
       </div>
     ),
-    ogSize
+    {
+      ...ogSize,
+      fonts: [
+        {
+          name: 'Noto Sans SC',
+          data: fontData,
+          style: 'normal',
+          weight: 700,
+        },
+      ],
+    }
   );
 }
