@@ -135,7 +135,7 @@ export default async function handler(req: Request) {
               <div style={{ fontSize: 60, fontWeight: 800, lineHeight: 1.05 }}>{title}</div>
               <div style={{ marginTop: 16, fontSize: 28, color: '#FAE6B1' }}>{subtitle}</div>
               {amountText && (
-                <div style={{ marginTop: 26, fontSize: 44, fontWeight: 800, color: '#ffdd93' }}>
+                <div style={{ display: 'flex', marginTop: 26, fontSize: 44, fontWeight: 800, color: '#ffdd93' }}>
                   奖励 {amountText} BNB
                 </div>
               )}
