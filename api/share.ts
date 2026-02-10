@@ -65,10 +65,64 @@ export default async function handler(req: Request) {
     <meta name="twitter:description" content="${escapeHtml(description)}" />
     <meta name="twitter:image" content="${ogUrl.toString()}" />
     ${redirectMeta}
+    <style>
+      :root { color-scheme: dark; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 20% 20%, #7a0a0a, #2a0a0a 55%, #140606 100%);
+        font-family: Arial, sans-serif;
+        color: #fff9f0;
+      }
+      .card {
+        width: min(520px, 88vw);
+        padding: 28px 24px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+        border: 1px solid rgba(250,230,177,0.2);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+        text-align: center;
+      }
+      .title {
+        font-size: 22px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        letter-spacing: 0.02em;
+      }
+      .desc {
+        font-size: 14px;
+        color: rgba(255,249,240,0.7);
+        margin-bottom: 18px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ff000e, #c4000b);
+        color: #fff9f0;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: 0 8px 20px rgba(255,0,14,0.35);
+      }
+      .hint {
+        margin-top: 12px;
+        font-size: 12px;
+        color: rgba(255,249,240,0.55);
+      }
+    </style>
   </head>
   <body>
-    <p>即将打开页面...</p>
-    <p><a href="${shareUrl}">点击立即打开</a></p>
+    <div class="card">
+      <div class="title">即将打开页面</div>
+      <div class="desc">3 秒后自动跳转，如未跳转请点击下方按钮</div>
+      <a class="btn" href="${shareUrl}">立即打开</a>
+      <div class="hint">${escapeHtml(shareUrl)}</div>
+    </div>
     ${redirectScript}
   </body>
 </html>`;
