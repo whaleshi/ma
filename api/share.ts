@@ -24,6 +24,8 @@ const escapeHtml = (value: string) => {
 
 export default async function handler(req: Request) {
   const url = new URL(req.url);
+  const userAgent = req.headers.get('user-agent') ?? '';
+  const isBot = /bot|crawl|spider|slack|discord|twitter|facebook|whatsapp|telegram|wechat|preview/i.test(userAgent);
   const type = normalizeType(url.searchParams.get('type'));
   const amount = url.searchParams.get('amount');
   const origin = url.origin;
@@ -36,6 +38,15 @@ export default async function handler(req: Request) {
   const title = '集马卡赢奖池';
   const description = '抽红包马、合成至尊马，赢取大奖';
   const shareUrl = `${origin}/?type=${encodeURIComponent(type)}${amount ? `&amount=${encodeURIComponent(amount)}` : ''}`;
+
+  const redirectMeta = isBot ? '' : `<meta http-equiv="refresh" content="3; url=${shareUrl}" />`;
+  const redirectScript = isBot
+    ? ''
+    : `<script>
+      setTimeout(function () {
+        window.location.href = ${JSON.stringify(shareUrl)};
+      }, 3000);
+    </script>`;
 
   const html = `<!doctype html>
 <html lang="zh-CN">
@@ -53,11 +64,12 @@ export default async function handler(req: Request) {
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
     <meta name="twitter:image" content="${ogUrl.toString()}" />
-    <meta http-equiv="refresh" content="0; url=${shareUrl}" />
+    ${redirectMeta}
   </head>
   <body>
-    <p>正在打开页面...</p>
-    <a href="${shareUrl}">${escapeHtml(shareUrl)}</a>
+    <p>即将打开页面...</p>
+    <p><a href="${shareUrl}">点击立即打开</a></p>
+    ${redirectScript}
   </body>
 </html>`;
 
