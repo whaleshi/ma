@@ -75,14 +75,16 @@ export function CardDetailModal({
     }
     const addr = address?.toLowerCase() ?? '';
     if (card.type === 'red_packet') {
-      return luckyRewards
+      const ids = luckyRewards
         .filter((item) => item.owner?.toLowerCase() === addr && !item.claimed)
-        .map((item) => item.tokenId);
+        .map((item) => item.tokenId.toString());
+      return Array.from(new Set(ids)).map((id) => BigInt(id));
     }
     if (card.type === 'supreme') {
-      return legendRewards
-        .filter((item) => item.owner?.toLowerCase() === addr)
-        .map((item) => item.tokenId);
+      const ids = legendRewards
+        .filter((item) => item.owner?.toLowerCase() === addr && !item.claimed)
+        .map((item) => item.tokenId.toString());
+      return Array.from(new Set(ids)).map((id) => BigInt(id));
     }
     return [];
   }, [card.type, address, luckyRewards, legendRewards]);
@@ -158,7 +160,17 @@ export function CardDetailModal({
   };
 
   const handleRequest = () => {
-    const text = "XXXXXX";
+    const typeMap: Record<string, string> = {
+      career: 'career',
+      love: 'love',
+      wealth: 'wealth',
+      luck: 'luck',
+      red_packet: 'red',
+      supreme: 'supreme',
+    };
+    const shareType = typeMap[card.type] ?? 'default';
+    const shareUrl = `${window.location.origin}/api/share?type=${shareType}`;
+    const text = `Horse 发生 求一张${card.name}，一起冲大奖！${shareUrl}`;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   };
@@ -225,7 +237,8 @@ export function CardDetailModal({
                           <select
                             value={selectedTokenId}
                             onChange={(e) => setSelectedTokenId(e.target.value)}
-                            className="w-full bg-white border border-[#FAE6B1] rounded-xl py-3 px-4 text-[#8b0000] focus:outline-none focus:ring-2 focus:ring-[#ff000e]/20 transition-all text-sm"
+                            className="w-full bg-white border border-[#FAE6B1] rounded-xl py-3 px-4 text-[#8b0000] focus:outline-none focus:ring-2 focus:ring-[#ff000e]/20 transition-all text-sm appearance-none [&::-ms-expand]:hidden"
+                            style={{ WebkitAppearance: 'none', MozAppearance: 'none', backgroundImage: 'none' }}
                           >
                             <option value="" disabled>
                               选择要赠送的 Token ID

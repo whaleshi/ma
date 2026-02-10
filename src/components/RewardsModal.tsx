@@ -355,7 +355,7 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
                         className="bg-[#ff000e] text-white text-xs font-bold py-2 px-4 rounded-lg shadow-md hover:bg-[#d6000c] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         {reward.type === 'grand_prize' && reward.rewardAmountWei === 0n
-                          ? '暂无奖励'
+                          ? '待开奖'
                           : claimingTokenId === BigInt(reward.id)
                             ? '处理中...'
                             : '领取'}

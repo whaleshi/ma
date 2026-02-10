@@ -22,6 +22,7 @@ import { playRedPacketSound, initAudio } from './utils/soundEffects';
 import { decodeTokenId } from './utils/decodeTokenId';
 import { useAccount } from "wagmi";
 import { formatEther } from 'viem';
+import supremeImg from 'figma:asset/6651fc0c90390d131f74b014994be51852a71a59.png';
 import { useReferral } from './contexts/ReferralContext';
 import {
   parseNftAwardedFromReceipt,
@@ -69,6 +70,10 @@ const GlobalStyles = () => (
     @keyframes particle {
       0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
       50% { transform: translateY(-6px) scale(1.1); opacity: 1; }
+    }
+    @keyframes spinY {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
     }
     body {
       font-family: 'MiSans', system-ui, -apple-system, sans-serif !important;
@@ -585,8 +590,25 @@ export default function App() {
         <div className="max-w-md md:max-w-7xl mx-auto px-4 pt-28 pb-12">
           <div className="text-center pt-6 pb-8 md:pt-16 md:pb-16">
             {/* Removed animate-shimmer on mobile */}
-            <h1 className="text-4xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FAE6B1] via-[#ffffff] to-[#FAE6B1] md:bg-[linear-gradient(90deg,#FAE6B1_0%,#C6A66D_40%,#ffffff_50%,#C6A66D_60%,#FAE6B1_100%)] md:animate-shimmer drop-shadow-[0_2px_10px_rgba(198,166,109,0.3)] tracking-wider whitespace-nowrap will-change-transform">
-              集马卡 · 赢奖池
+            <h1 className="text-4xl md:text-7xl font-black tracking-wider whitespace-nowrap will-change-transform flex items-center justify-center gap-1 md:gap-2">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FAE6B1] via-[#ffffff] to-[#FAE6B1] md:bg-[linear-gradient(90deg,#FAE6B1_0%,#C6A66D_40%,#ffffff_50%,#C6A66D_60%,#FAE6B1_100%)] md:animate-shimmer drop-shadow-[0_2px_10px_rgba(198,166,109,0.3)]">
+                集
+              </span>
+              <span
+                className="inline-flex items-center justify-center"
+                style={{
+                  width: 'clamp(48px, 10vw, 160px)',
+                  height: 'clamp(48px, 10vw, 160px)',
+                  animation: 'spinY 6s linear infinite',
+                  transformStyle: 'preserve-3d',
+                  willChange: 'transform',
+                }}
+              >
+                <img src={supremeImg} alt="至尊马" className="h-full w-full object-contain drop-shadow-[0_2px_14px_rgba(198,166,109,0.4)]" />
+              </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FAE6B1] via-[#ffffff] to-[#FAE6B1] md:bg-[linear-gradient(90deg,#FAE6B1_0%,#C6A66D_40%,#ffffff_50%,#C6A66D_60%,#FAE6B1_100%)] md:animate-shimmer drop-shadow-[0_2px_10px_rgba(198,166,109,0.3)]">
+                卡 · 赢奖池
+              </span>
             </h1>
             <div className="mt-4 md:mt-6 flex items-center justify-center gap-2">
               <div

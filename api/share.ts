@@ -35,7 +35,7 @@ export default async function handler(req: Request) {
     ogUrl.searchParams.set('amount', amount);
   }
 
-  const title = '集马卡赢奖池';
+  const title = 'Horse 发生';
   const description = '抽红包马、合成至尊马，赢取大奖';
   const shareUrl = `${origin}/?type=${encodeURIComponent(type)}${amount ? `&amount=${encodeURIComponent(amount)}` : ''}`;
 

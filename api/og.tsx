@@ -56,54 +56,54 @@ export default async function handler(req: Request) {
   const cards: Record<string, { title: string; subtitle: string; image: string; accent: string }> = {
     career: {
       title: '事业马',
-      subtitle: '分享好运，事业腾飞',
+      subtitle: 'Horse 发生 · 好运加持',
       image: `${origin}/og/3c55e552361dae32ba73beaddae94fa841d4caaa.png`,
       accent: '#ff9a9e',
     },
     love: {
       title: '爱情马',
-      subtitle: '分享好运，缘分加持',
+      subtitle: 'Horse 发生 · 好运加持',
       image: `${origin}/og/3e75ed55595146a6ff7fa1a65e6413528470f471.png`,
       accent: '#ffd1dc',
     },
     wealth: {
       title: '发财马',
-      subtitle: '分享好运，财运爆棚',
+      subtitle: 'Horse 发生 · 好运加持',
       image: `${origin}/og/3e8ed8b84fe45c8898c2deea5cd3d6495bd61c69.png`,
       accent: '#ffd89b',
     },
     luck: {
       title: '好运马',
-      subtitle: '分享好运，欧气满满',
+      subtitle: 'Horse 发生 · 好运加持',
       image: `${origin}/og/876972c509561235a14234ebaeb8a04d4c2f28ae.png`,
       accent: '#ffe9a3',
     },
     red: {
       title: '红包马',
-      subtitle: '分享好运，红包不断',
+      subtitle: 'Horse 发生 · 好运加持',
       image: `${origin}/og/d19a2f3c21c67ce076c2a24d0e2058e33ea5a8a2.png`,
       accent: '#ffb3b3',
     },
     supreme: {
       title: '至尊马',
-      subtitle: '分享好运，至尊大奖',
+      subtitle: 'Horse 发生 · 好运加持',
       image: `${origin}/og/6651fc0c90390d131f74b014994be51852a71a59.png`,
       accent: '#ffd700',
     },
     red_win: {
       title: '红包中奖',
-      subtitle: '恭喜获得红包奖励',
+      subtitle: 'Horse 发生 · 好运加持',
       image: `${origin}/og/d19a2f3c21c67ce076c2a24d0e2058e33ea5a8a2.png`,
       accent: '#ff6b6b',
     },
     supreme_win: {
       title: '至尊开奖',
-      subtitle: '恭喜获得至尊奖励',
+      subtitle: 'Horse 发生 · 好运加持',
       image: `${origin}/og/6651fc0c90390d131f74b014994be51852a71a59.png`,
       accent: '#f7d27c',
     },
     default: {
-      title: '集马卡赢奖池',
+      title: 'Horse 发生',
       subtitle: '抽红包马、合成至尊马',
       image: `${origin}/og/6651fc0c90390d131f74b014994be51852a71a59.png`,
       accent: '#ff9a9e',
@@ -139,7 +139,7 @@ export default async function handler(req: Request) {
                   奖励 {amountText} BNB
                 </div>
               )}
-              <div style={{ marginTop: 18, fontSize: 22, color: '#ffffffaa' }}>MVP Race · Lucky Cards</div>
+              <div style={{ marginTop: 18, fontSize: 22, color: '#ffffffaa' }}>Horse 发生</div>
             </div>
             <div
               style={{
