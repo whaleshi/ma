@@ -222,7 +222,13 @@ export function CardDetailModal({
                 className="w-48 mb-6 drop-shadow-2xl relative"
               >
                 <div className="relative">
-                  <img src={imageSrc} alt={card.name} className="w-full h-auto relative z-10" />
+                  <img
+                    src={imageSrc}
+                    alt={card.name}
+                    className="w-full h-auto relative z-10"
+                    loading="eager"
+                    decoding="sync"
+                  />
                 </div>
               </motion.div>
 

@@ -258,6 +258,9 @@ export default function App() {
     sources.forEach((src) => {
       const img = new Image();
       img.src = src;
+      if (typeof img.decode === 'function') {
+        img.decode().catch(() => undefined);
+      }
     });
   }, []);
 
