@@ -19,8 +19,12 @@ interface CardDetailModalProps {
   ownedTokenIds: bigint[];
   luckyTokenIds: bigint[];
   legendTokenIds: bigint[];
-  luckyRewards: { tokenId: bigint; owner?: string }[];
-  legendRewards: { tokenId: bigint; owner?: string }[];
+  luckyRewards: {
+    claimed: any; tokenId: bigint; owner?: string
+  }[];
+  legendRewards: {
+    claimed: any; tokenId: bigint; owner?: string
+  }[];
 }
 
 export function CardDetailModal({
@@ -43,6 +47,7 @@ export function CardDetailModal({
   const [selectedTokenId, setSelectedTokenId] = useState<string>('');
   const { address } = useAccount();
   const wagmiConfig = useConfig();
+  const chain = wagmiConfig.chains?.[0];
   const { data: nftContract } = useNftContractAddress();
   const { writeContractAsync } = useWriteContract();
 
@@ -145,6 +150,8 @@ export function CardDetailModal({
           abi: erc1155Abi,
           functionName: 'safeTransferFrom',
           args: [address, giftAddress as `0x${string}`, tokenId, 1n, '0x'],
+          account: address as `0x${string}`,
+          chain,
         });
         await waitForTransactionReceipt(wagmiConfig, { hash });
         toast.success(`成功赠送 ${card.name} 给 ${giftAddress.substring(0, 6)}...${giftAddress.substring(giftAddress.length - 4)}`);
@@ -296,11 +303,10 @@ export function CardDetailModal({
                           onOpenRewards();
                         }}
                         disabled={!canClaimRedPacket}
-                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                          canClaimRedPacket
-                            ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        }`}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${canClaimRedPacket
+                          ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          }`}
                       >
                         <span>领取奖励</span>
                       </button>
@@ -312,11 +318,10 @@ export function CardDetailModal({
                             handleRequest();
                           }
                         }}
-                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                          card.count > 0
-                            ? 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
-                            : 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
-                        }`}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${card.count > 0
+                          ? 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
+                          : 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
+                          }`}
                       >
                         {card.count > 0 ? <Send size={18} /> : <Share2 size={18} />}
                         <span>{card.count > 0 ? '赠送卡片' : '找人索要'}</span>
@@ -339,11 +344,10 @@ export function CardDetailModal({
                           onOpenRewards();
                         }}
                         disabled={!canClaimSupreme}
-                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                          canClaimSupreme
-                            ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                        }`}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${canClaimSupreme
+                          ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
+                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          }`}
                       >
                         <span>领取奖励</span>
                       </button>
@@ -378,11 +382,10 @@ export function CardDetailModal({
                             handleRequest();
                           }
                         }}
-                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
-                          card.count > 0
-                            ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
-                            : 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
-                        }`}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${card.count > 0
+                          ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
+                          : 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
+                          }`}
                       >
                         {card.count > 0 ? <Send size={18} /> : <Share2 size={18} />}
                         <span>{card.count > 0 ? '赠送卡片' : '找人索要'}</span>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Copy, Share2 } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 import { useAccount, useWalletClient } from 'wagmi';
 import { useEarnedFreeDrawsFromReferral, useInviterDrawStats } from '../hooks/useLotteryContract';
 import { CONTRACTS } from '../constant/contracts';
@@ -47,6 +47,7 @@ export function InviteSection() {
         types,
         primaryType: 'Invite',
         message: { inviter: address },
+        account: address as `0x${string}`,
       });
 
       const link = `${window.location.origin}?inviter=${address}&signature=${signature}`;
@@ -86,7 +87,7 @@ export function InviteSection() {
       <div className="absolute top-[-20%] right-[-20%] w-40 h-40 bg-[#FAE6B1] rounded-full mix-blend-overlay filter blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity" />
 
       <h2 className="text-[#fff9f0] text-xl font-black text-center mb-6 tracking-wide drop-shadow-md">邀请好友</h2>
-      
+
       <div className="flex justify-between items-center text-[#fff9f0]/60 text-xs font-bold mb-3 tracking-wide">
         <span>你的邀请链接</span>
         <span className="bg-[#FAE6B1]/10 px-3 py-1 rounded-full text-[#FAE6B1] border border-[#FAE6B1]/10">
@@ -99,12 +100,12 @@ export function InviteSection() {
           className="flex-1 bg-black/20 border border-white/5 rounded-2xl h-14 flex items-center px-5 overflow-hidden cursor-pointer hover:bg-black/30 transition-colors"
           onClick={inviteLink ? handleCopy : generateInviteLink}
         >
-           <span className="text-[#fff9f0] text-sm truncate w-full opacity-80 tracking-tight">
-             {inviteLink || (isSigningInvite ? '签名中...' : '点击生成邀请链接')}
-           </span>
-           <Copy size={18} className="ml-3 text-white/30" />
+          <span className="text-[#fff9f0] text-sm truncate w-full opacity-80 tracking-tight">
+            {inviteLink || (isSigningInvite ? '签名中...' : '点击生成邀请链接')}
+          </span>
+          <Copy size={18} className="ml-3 text-white/30" />
         </div>
-        <button 
+        <button
           onClick={handleShare}
           className="group relative bg-[#FAE6B1] hover:bg-[#fdf1cd] text-[#5c0000] rounded-2xl px-6 h-14 flex items-center justify-center gap-2 text-sm font-black shadow-[0_8px_20px_rgba(198,166,109,0.2)] active:scale-95 transition-all whitespace-nowrap overflow-hidden"
         >

@@ -18,6 +18,7 @@ import { MobileMenu } from './components/MobileMenu';
 import { Toaster } from 'sonner';
 import { toast } from 'sonner';
 import { copyToClipboard } from './utils/clipboard';
+import { logger } from './utils/logger';
 import { playRedPacketSound, initAudio } from './utils/soundEffects';
 import { decodeTokenId } from './utils/decodeTokenId';
 import { useAccount } from "wagmi";
@@ -353,7 +354,7 @@ export default function App() {
         inviterOnChain,
         usedReferral: !!shouldUseReferral,
       };
-      console.log('enterLottery params', params);
+      logger.log('enterLottery params', params);
       const receipt = times === 10
         ? await enterLottery10Times(value as any, inviter as `0x${string}`, signature)
         : await enterLottery(value as any, inviter as `0x${string}`, signature, address);

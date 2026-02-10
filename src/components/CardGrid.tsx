@@ -15,8 +15,8 @@ interface CardGridProps {
   ownedTokenIds: bigint[];
   luckyTokenIds: bigint[];
   legendTokenIds: bigint[];
-  luckyRewards: { tokenId: bigint; owner?: string }[];
-  legendRewards: { tokenId: bigint; owner?: string }[];
+  luckyRewards: { tokenId: bigint; owner?: string, claimed: any }[];
+  legendRewards: { tokenId: bigint; owner?: string, claimed: any }[];
 }
 
 const cardImages: Record<string, string> = {

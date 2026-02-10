@@ -38,17 +38,16 @@ export function ResultModal({ isOpen, onClose, results }: ResultModalProps) {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-6">
             {results.map((card, index) => (
               <motion.div
-                key={card.id}
+                key={card.type}
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ delay: index * 0.1, type: 'spring' }}
                 className="relative"
               >
-                <div className={`bg-gradient-to-br ${
-                  card.id === 'redpacket' 
-                    ? 'from-red-500/20 to-orange-500/20 border-red-500/50' 
-                    : 'from-gray-800 to-gray-900 border-gray-700'
-                } rounded-xl p-4 border`}>
+                <div className={`bg-gradient-to-br ${card.type === 'red_packet'
+                  ? 'from-red-500/20 to-orange-500/20 border-red-500/50'
+                  : 'from-gray-800 to-gray-900 border-gray-700'
+                  } rounded-xl p-4 border`}>
                   {/* Card Image */}
                   <div className="aspect-[3/4] flex items-center justify-center text-lg mb-2 bg-gradient-to-br from-gray-900/50 to-gray-950/50 rounded-lg">
                     <span className="text-gray-400">{card.name}</span>
@@ -61,14 +60,13 @@ export function ResultModal({ isOpen, onClose, results }: ResultModalProps) {
                   </div>
 
                   {/* Count Badge */}
-                  <div className={`absolute top-2 right-2 w-6 h-6 ${
-                    card.id === 'redpacket' ? 'bg-red-600' : 'bg-purple-600'
-                  } rounded-full flex items-center justify-center text-xs shadow-lg`}>
+                  <div className={`absolute top-2 right-2 w-6 h-6 ${card.type === 'red_packet' ? 'bg-red-600' : 'bg-purple-600'
+                    } rounded-full flex items-center justify-center text-xs shadow-lg`}>
                     {card.count}
                   </div>
 
                   {/* Red Packet Special Effect */}
-                  {card.id === 'redpacket' && (
+                  {card.type === 'red_packet' && (
                     <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-xl blur-xl -z-10 animate-pulse" />
                   )}
                 </div>
@@ -77,7 +75,7 @@ export function ResultModal({ isOpen, onClose, results }: ResultModalProps) {
           </div>
 
           {/* Special Messages */}
-          {results.some(r => r.id === 'redpacket') && (
+          {results.some(r => r.type === 'red_packet') && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

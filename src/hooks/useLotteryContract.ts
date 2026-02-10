@@ -444,11 +444,12 @@ export function useLegendTokenIdsByRounds(rounds?: bigint[], refetchIntervalMs =
 }
 
 export function parseNftAwardedFromReceipt(
-    receipt: { logs: { data: `0x${string}`; topics: `0x${string}`[] }[] },
+    receipt: { logs?: { data: `0x${string}`; topics: `0x${string}`[] }[] },
     address: Address,
 ) {
     const results: { tokenId: bigint; nftType: number }[] = [];
-    receipt.logs.forEach((log) => {
+    const logs = receipt.logs ?? [];
+    logs.forEach((log) => {
         try {
             const decoded = decodeEventLog({
                 abi: CONTRACTS.LOTTERY.abi,

@@ -4,6 +4,7 @@ import { X, Gift, Wallet, Trophy, History } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatEther } from 'viem';
 import { useAccount } from 'wagmi';
+import { logger } from '../utils/logger';
 import {
   useClaimLegendReward,
   useClaimLuckyReward,
@@ -100,22 +101,22 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
   const formattedRewards = useMemo<Reward[]>(() => {
     const lucky = ownedRewards.map((item) => ({
       id: item.tokenId.toString(),
-      type: 'red_packet',
+      type: 'red_packet' as const,
       amount: formatEther(item.rewardAmount),
       rewardAmountWei: item.rewardAmount,
       date: '--',
-      status: item.claimed ? 'claimed' : 'pending',
+      status: (item.claimed ? 'claimed' : 'pending') as any,
     }));
     const legend = ownedLegendRewards.map((item) => {
       const estimated = item.rewardAmount === 0n ? legendEstimateMap.get(item.tokenId.toString()) : undefined;
       const displayAmount = typeof estimated === 'bigint' ? estimated : item.rewardAmount;
       return {
         id: item.tokenId.toString(),
-        type: 'grand_prize',
+        type: 'grand_prize' as const,
         amount: formatEther(displayAmount),
         rewardAmountWei: item.rewardAmount,
         date: '--',
-        status: item.claimed ? 'claimed' : 'pending',
+        status: (item.claimed ? 'claimed' : 'pending') as any,
       };
     });
     return [...lucky, ...legend];
@@ -125,7 +126,7 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
     if (rewards.length === 0) {
       return;
     }
-    console.log('luckyRewards details', rewards.map((item) => ({
+    logger.log('luckyRewards details', rewards.map((item) => ({
       tokenId: item.tokenId.toString(),
       claimed: item.claimed,
       rewardAmount: item.rewardAmount.toString(),
@@ -136,9 +137,9 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
     if (rounds.length === 0) {
       return;
     }
-    console.log('legend rounds', rounds.map((r) => r.toString()));
-    console.log('legend tokenIds', legendTokenIds.map((id) => id.toString()));
-    console.log('legend rewards', legendRewards.map((item) => ({
+    logger.log('legend rounds', rounds.map((r) => r.toString()));
+    logger.log('legend tokenIds', legendTokenIds.map((id) => id.toString()));
+    logger.log('legend rewards', legendRewards.map((item) => ({
       tokenId: item.tokenId.toString(),
       owner: item.owner,
       claimed: item.claimed,
@@ -150,7 +151,7 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
     if (formattedRewards.length === 0) {
       return;
     }
-    console.log('formatted rewards list', formattedRewards);
+    logger.log('formatted rewards list', formattedRewards);
   }, [formattedRewards]);
 
   const pendingRewards = formattedRewards.filter(r => r.status === 'pending');

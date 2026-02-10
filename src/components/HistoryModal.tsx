@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { formatEther } from 'viem';
 import { useAccount } from 'wagmi';
 import { useUserActionRecords } from '../hooks/useLotteryContract';
+import { logger } from '../utils/logger';
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -25,7 +26,7 @@ export function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
       rewardAmount: typeof item.rewardAmount === 'bigint' ? item.rewardAmount.toString() : String(item.rewardAmount),
       timestamp: typeof item.timestamp === 'bigint' ? item.timestamp.toString() : String(item.timestamp),
     }));
-    console.log('user action records', normalized);
+    logger.log('user action records', normalized);
   }, [data]);
 
   const history = useMemo(() => {
