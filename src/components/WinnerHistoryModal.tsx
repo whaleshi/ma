@@ -93,7 +93,7 @@ export function WinnerHistoryModal({ isOpen, onClose }: WinnerHistoryModalProps)
         });
       }
     });
-    return list;
+    return list.slice().reverse().slice(0, 20);
   }, [luckyRewards, legendRewards, roundDisplay, legendEstimateMap]);
 
   const legendWinners = winners.filter((item) => item.type === 'legend');
@@ -127,23 +127,24 @@ export function WinnerHistoryModal({ isOpen, onClose }: WinnerHistoryModalProps)
              </div>
 
              <div className="flex-1 overflow-y-auto p-4 space-y-3">
-               {/* Special Supreme Winner Card */}
-               <div className="bg-gradient-to-r from-[#FAE6B1] to-[#C6A66D] rounded-xl p-4 shadow-md border border-[#fff]/50 relative overflow-hidden group">
-                  <div className="absolute -top-2 -right-2 opacity-10 pointer-events-none rotate-12 group-hover:rotate-0 transition-transform duration-700">
-                    <Crown size={80} className="text-[#5c0000]" />
-                  </div>
-                  <div className="flex items-center gap-3 relative z-10">
-                    <div className="w-10 h-10 rounded-full bg-[#5c0000] flex items-center justify-center shrink-0 border-2 border-[#FAE6B1] shadow-sm">
-                      <Crown size={18} className="text-[#FAE6B1]" />
+               {legendWinners.length === 0 && (
+                 <div className="bg-gradient-to-r from-[#FAE6B1] to-[#C6A66D] rounded-xl p-4 shadow-md border border-[#fff]/50 relative overflow-hidden group">
+                    <div className="absolute -top-2 -right-2 opacity-10 pointer-events-none rotate-12 group-hover:rotate-0 transition-transform duration-700">
+                      <Crown size={80} className="text-[#5c0000]" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[#5c0000] text-[10px] font-bold mb-0.5 uppercase tracking-wider opacity-80">至尊大奖</div>
-                      <div className="text-[#2a0a0a] text-sm font-black leading-tight">
-                        暂无人合成至尊马
+                    <div className="flex items-center gap-3 relative z-10">
+                      <div className="w-10 h-10 rounded-full bg-[#5c0000] flex items-center justify-center shrink-0 border-2 border-[#FAE6B1] shadow-sm">
+                        <Crown size={18} className="text-[#FAE6B1]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[#5c0000] text-[10px] font-bold mb-0.5 uppercase tracking-wider opacity-80">至尊大奖</div>
+                        <div className="text-[#2a0a0a] text-sm font-black leading-tight">
+                          暂无人合成至尊马
+                        </div>
                       </div>
                     </div>
-                  </div>
-               </div>
+                 </div>
+               )}
 
                {winners.map(winner => (
                  <div key={winner.id} className="bg-white border border-[#ffe4c4] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">

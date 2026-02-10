@@ -78,7 +78,7 @@ const GlobalStyles = () => (
   `}</style>
 );
 
-import { Copy } from 'lucide-react';
+import { Copy, Sparkles } from 'lucide-react';
 
 // Mock types
 export type CardType = 'love' | 'career' | 'luck' | 'wealth' | 'red_packet' | 'supreme';
@@ -507,9 +507,10 @@ export default function App() {
           <div className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-[#FAE6B1]/30 bg-gradient-to-b from-[#5c0000] to-[#2a0a0a] px-6 py-6 text-center shadow-2xl">
             <div className="pointer-events-none absolute top-[-20%] left-[-20%] h-[60%] w-[140%] rounded-full bg-[#FAE6B1]/10 blur-[60px]" />
             <div className="pointer-events-none absolute bottom-[-20%] right-[-20%] h-[60%] w-[140%] rounded-full bg-[#ff0000]/10 blur-[60px]" />
-            <div className="relative mx-auto mb-5 h-16 w-16 rounded-full bg-gradient-to-br from-[#FAE6B1] to-[#C6A66D] p-[2px] shadow-[0_0_30px_rgba(250,230,177,0.3)]">
-              <div className="relative h-full w-full rounded-full bg-[#5c0000]">
-                <div className="absolute inset-[6px] animate-spin rounded-full border-4 border-[#FAE6B1]/20 border-t-[#FAE6B1]" />
+            <div className="mx-auto mb-5 h-20 w-20 rounded-full bg-gradient-to-br from-[#FAE6B1] to-[#C6A66D] p-[2px] shadow-[0_0_30px_rgba(250,230,177,0.3)] animate-[bounce_3s_infinite]">
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-[#5c0000] relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent rotate-45 animate-[shine_2s_infinite]" />
+                <Sparkles className="h-10 w-10 text-[#FAE6B1]" />
               </div>
             </div>
             <div className="text-[#FAE6B1] text-lg font-black">等待钱包确认</div>
@@ -521,6 +522,7 @@ export default function App() {
         position="top-center"
         theme="dark"
         toastOptions={{
+          duration: 2000,
           style: {
             background: '#2a0a0a', // Solid background for better performance
             border: '1px solid rgba(250, 230, 177, 0.2)',

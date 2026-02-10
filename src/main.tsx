@@ -2,6 +2,7 @@
   import "@rainbow-me/rainbowkit/styles.css";
   import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
   import { getDefaultConfig, lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+  import { binanceWallet, metaMaskWallet, okxWallet } from "@rainbow-me/rainbowkit/wallets";
   import { createRoot } from "react-dom/client";
   import { WagmiProvider } from "wagmi";
   import { bscTestnet } from "wagmi/chains";
@@ -19,6 +20,12 @@
     appName: "Horse 发生",
     projectId,
     chains: [bscTestnet],
+    wallets: [
+      {
+        groupName: "推荐钱包",
+        wallets: [metaMaskWallet, okxWallet, binanceWallet],
+      },
+    ],
     ssr: false,
   });
 

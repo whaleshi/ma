@@ -82,6 +82,7 @@ export function DrawModal({ isOpen, onClose, results }: DrawModalProps) {
       count
     }));
   }, [results]);
+  const hasRedPacket = results.includes('red_packet');
 
   const currentSpinCard = spinCards[spinIndex];
 
@@ -150,6 +151,16 @@ export function DrawModal({ isOpen, onClose, results }: DrawModalProps) {
                 <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#ffaa00]/10 to-transparent"></div>
                 
                 <h3 className="text-[#8b0000] text-3xl font-black mb-6 relative z-10 tracking-wide">恭喜获得</h3>
+                {!hasRedPacket && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="relative z-10 mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-[#ff000e]/20 bg-[#ff000e]/10 px-4 py-1 text-[#c4000b] text-xs font-black tracking-widest"
+                  >
+                    <span className="inline-block h-2 w-2 rounded-full bg-[#ff000e] animate-pulse" />
+                    差一点就抽中红包马
+                  </motion.div>
+                )}
                 
                 <div className={`${uniqueResults.length === 1 ? 'flex justify-center' : 'grid grid-cols-3'} gap-4 mb-8 max-h-[60vh] overflow-y-auto p-2 relative z-10`}>
                   {uniqueResults.map(({ type, count }, idx) => {

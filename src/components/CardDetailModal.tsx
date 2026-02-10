@@ -86,6 +86,20 @@ export function CardDetailModal({
     }
     return [];
   }, [card.type, address, luckyRewards, legendRewards]);
+  const canClaimRedPacket = useMemo(() => {
+    if (card.type !== 'red_packet') {
+      return false;
+    }
+    const addr = address?.toLowerCase() ?? '';
+    return luckyRewards.some((item) => item.owner?.toLowerCase() === addr && !item.claimed);
+  }, [card.type, address, luckyRewards]);
+  const canClaimSupreme = useMemo(() => {
+    if (card.type !== 'supreme') {
+      return false;
+    }
+    const addr = address?.toLowerCase() ?? '';
+    return legendRewards.some((item) => item.owner?.toLowerCase() === addr && !item.claimed);
+  }, [card.type, address, legendRewards]);
 
   useEffect(() => {
     if (!isOpen || !isGiftMode) {
@@ -258,28 +272,80 @@ export function CardDetailModal({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -20 }}
-                      className="w-full space-y-3"
+                      className="flex gap-3 w-full"
                     >
                       <button
                         onClick={() => {
-                          // toast.success("奖励领取成功！");
+                          if (!canClaimRedPacket) {
+                            return;
+                          }
                           onClose();
                           onOpenRewards();
                         }}
-                        className="w-full py-3 px-4 rounded-xl font-bold bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all active:scale-95"
+                        disabled={!canClaimRedPacket}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                          canClaimRedPacket
+                            ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
+                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        }`}
                       >
                         <span>领取奖励</span>
                       </button>
                       <button
-                        onClick={() => setIsGiftMode(true)}
-                        disabled={card.count === 0}
-                        className={`w-full py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${card.count > 0
+                        onClick={() => {
+                          if (card.count > 0) {
+                            setIsGiftMode(true);
+                          } else {
+                            handleRequest();
+                          }
+                        }}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                          card.count > 0
                             ? 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          }`}
+                            : 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
+                        }`}
                       >
-                        <Send size={18} />
-                        <span>赠送卡片</span>
+                        {card.count > 0 ? <Send size={18} /> : <Share2 size={18} />}
+                        <span>{card.count > 0 ? '赠送卡片' : '找人索要'}</span>
+                      </button>
+                    </motion.div>
+                  ) : card.type === 'supreme' ? (
+                    <motion.div
+                      key="supreme-actions"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="flex gap-3 w-full"
+                    >
+                      <button
+                        onClick={() => {
+                          if (!canClaimSupreme) {
+                            return;
+                          }
+                          onClose();
+                          onOpenRewards();
+                        }}
+                        disabled={!canClaimSupreme}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                          canClaimSupreme
+                            ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
+                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                        }`}
+                      >
+                        <span>领取奖励</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (card.count > 0) {
+                            setIsGiftMode(true);
+                          } else {
+                            handleRequest();
+                          }
+                        }}
+                        className="flex-1 py-3 px-4 rounded-xl font-bold bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] flex items-center justify-center gap-2 shadow-sm hover:bg-[#ffeec7] transition-all active:scale-95"
+                      >
+                        {card.count > 0 ? <Send size={18} /> : <Share2 size={18} />}
+                        <span>{card.count > 0 ? '赠送卡片' : '找人索要'}</span>
                       </button>
                     </motion.div>
                   ) : (
@@ -292,25 +358,33 @@ export function CardDetailModal({
                     >
                       {/* Gift Button */}
                       <button
-                        onClick={() => setIsGiftMode(true)}
-                        disabled={card.count === 0}
-                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${card.count > 0
-                          ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
-                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                          }`}
+                        onClick={() => {
+                          if (card.count > 0) {
+                            setIsGiftMode(true);
+                          } else {
+                            handleRequest();
+                          }
+                        }}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 ${
+                          card.count > 0
+                            ? 'bg-gradient-to-r from-[#ff000e] to-[#c4000b] text-white shadow-lg shadow-red-500/20'
+                            : 'bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] shadow-sm hover:bg-[#ffeec7]'
+                        }`}
                       >
-                        <Send size={18} />
-                        <span>赠送卡片</span>
+                        {card.count > 0 ? <Send size={18} /> : <Share2 size={18} />}
+                        <span>{card.count > 0 ? '赠送卡片' : '找人索要'}</span>
                       </button>
 
                       {/* Request Button */}
-                      <button
-                        onClick={handleRequest}
-                        className="flex-1 py-3 px-4 rounded-xl font-bold bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] flex items-center justify-center gap-2 shadow-sm hover:bg-[#ffeec7] transition-all active:scale-95"
-                      >
-                        <Share2 size={18} />
-                        <span>找人索要</span>
-                      </button>
+                      {card.count > 0 ? (
+                        <button
+                          onClick={handleRequest}
+                          className="flex-1 py-3 px-4 rounded-xl font-bold bg-[#FAE6B1] text-[#8b0000] border border-[#d6c08d] flex items-center justify-center gap-2 shadow-sm hover:bg-[#ffeec7] transition-all active:scale-95"
+                        >
+                          <Share2 size={18} />
+                          <span>找人索要</span>
+                        </button>
+                      ) : null}
                     </motion.div>
                   )}
                 </AnimatePresence>
