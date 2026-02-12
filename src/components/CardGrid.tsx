@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Card } from '../App';
 import { CardDetailModal } from './CardDetailModal';
 import supremeImg from 'figma:asset/6651fc0c90390d131f74b014994be51852a71a59.png';
@@ -48,8 +48,8 @@ export function CardGrid({
   // Store grayscale states for each card (whether it should be grayed out)
   const [grayscaleStates, setGrayscaleStates] = useState<Record<string, boolean>>({});
 
-  // This will update grayscale states based on card ownership on initial render and whenever `cards` change
-  useEffect(() => {
+  // Use useLayoutEffect to ensure the card styles are updated before layout is calculated
+  useLayoutEffect(() => {
     const updatedStates: Record<string, boolean> = {};
     cards.forEach((card) => {
       updatedStates[card.type] = card.count === 0; // If the card is not owned, it should be grayed out
