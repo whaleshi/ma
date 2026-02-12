@@ -1,13 +1,16 @@
 import React from 'react';
+import { useEntryFee } from '../hooks/useLotteryContract';
+import { formatEther } from 'viem';
 
 export function RulesSection() {
+  const { data: entryFee } = useEntryFee();
   const rules = [
     "付费抽卡 20% 注入红包奖池，70% 注入超级大奖，10% 注入财库用于回购平台币",
     "抽中红包马立即获得当前奖池 80%，剩余 20% 滚存到下一轮",
-    "首个合成至尊马的用户获得 10% 超级大奖",
-    "开奖后至尊马持有者按占比瓜分 70% 超级大奖，剩余 20% 滚存到下一期",
+    "首个合成至尊马的用户可额外独占10%超级大奖",
+    "开奖后至尊马持有者按占比瓜分 80% 超级大奖，剩余 20% 滚存到下一期",
     "爱情马 + 事业马 + 好运马 + 发财马 各1张 → 合成至尊马",
-    "新用户免费 4 次，继续抽卡 0.002 BNB/次",
+    `新用户免费 4 次，继续抽卡 ${formatEther(entryFee as bigint)} BNB/次`,
     "邀请好友付费抽 1 次，你获得 1 次免费机会"
   ];
 
