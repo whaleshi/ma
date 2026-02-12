@@ -83,16 +83,38 @@ export function InviteSection() {
   const handleShare = async () => {
     let currentLink = inviteLink;
     
-    // 如果没有链接，先执行签名逻辑并获取返回的 link
     if (!currentLink) {
       currentLink = await performSignAndGenerateLink();
     }
 
-    // 只有拿到 link 后才打开分享窗口
-    if (currentLink) {
-      const text = encodeURIComponent(`2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆${currentLink}`);
-      window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+    if (!currentLink) return;
+
+    const shareText = `2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆`;
+    const fullContent = `${shareText}${currentLink}`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullContent)}`;
+
+    // 1. 优先尝试系统原生分享 (iOS/Android 体验最好)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'GoodhorseBNB',
+          text: shareText,
+          url: currentLink,
+        });
+        return; // 分享成功，不再执行后续跳转
+      } catch (err) {
+        // 用户取消分享或环境不支持则回退到链接跳转
+        console.log('Native share failed or cancelled');
+      }
     }
+
+    // 2. 针对 Twitter 跳转的优化
+    // 在移动端，window.open 有时会导致主进程挂起，使用模拟点击更稳定
+    const shareAnchor = document.createElement('a');
+    shareAnchor.href = twitterUrl;
+    shareAnchor.target = '_blank';
+    shareAnchor.rel = 'noopener noreferrer';
+    shareAnchor.click();
   };
 
   return (
