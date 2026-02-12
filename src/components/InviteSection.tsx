@@ -23,10 +23,11 @@ export function InviteSection() {
     }
   }, [address]);
 
-  const generateInviteLink = async () => {
+  // 抽离核心签名逻辑，使其可以返回生成的 link
+  const performSignAndGenerateLink = async () => {
     if (!address || !walletClient) {
       toast.error('请先连接钱包');
-      return;
+      return null;
     }
 
     setIsSigningInvite(true);
@@ -52,12 +53,18 @@ export function InviteSection() {
 
       const link = `${window.location.origin}?inviter=${address}&signature=${signature}`;
       setInviteLink(link);
-      toast.success('邀请链接生成成功');
-    } catch {
+      return link;
+    } catch (err) {
       toast.error('生成邀请链接失败');
+      return null;
     } finally {
       setIsSigningInvite(false);
     }
+  };
+
+  const generateInviteLink = async () => {
+    const link = await performSignAndGenerateLink();
+    if (link) toast.success('邀请链接生成成功');
   };
 
   const handleCopy = async () => {
@@ -74,16 +81,22 @@ export function InviteSection() {
   };
 
   const handleShare = async () => {
-    if (!inviteLink) {
-      await generateInviteLink();
+    let currentLink = inviteLink;
+    
+    // 如果没有链接，先执行签名逻辑并获取返回的 link
+    if (!currentLink) {
+      currentLink = await performSignAndGenerateLink();
     }
-    const text = encodeURIComponent(`2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆${inviteLink}`);
-    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+
+    // 只有拿到 link 后才打开分享窗口
+    if (currentLink) {
+      const text = encodeURIComponent(`2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆${currentLink}`);
+      window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+    }
   };
 
   return (
     <div className="mt-6 bg-gradient-to-br from-[#5c0000]/30 to-[#3a0000]/30 backdrop-blur-3xl rounded-2xl p-8 shadow-2xl border border-white/5 relative overflow-hidden group">
-      {/* Decorative background */}
       <div className="absolute top-[-20%] right-[-20%] w-40 h-40 bg-[#FAE6B1] rounded-full mix-blend-overlay filter blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity" />
 
       <h2 className="text-[#fff9f0] text-xl font-black text-center mb-6 tracking-wide drop-shadow-md">邀请好友</h2>
@@ -107,10 +120,11 @@ export function InviteSection() {
         </div>
         <button
           onClick={handleShare}
-          className="group relative bg-[#FAE6B1] hover:bg-[#fdf1cd] text-[#5c0000] rounded-2xl px-6 h-14 flex items-center justify-center gap-2 text-sm font-black shadow-[0_8px_20px_rgba(198,166,109,0.2)] active:scale-95 transition-all whitespace-nowrap overflow-hidden"
+          disabled={isSigningInvite}
+          className="group relative bg-[#FAE6B1] hover:bg-[#fdf1cd] text-[#5c0000] rounded-2xl px-6 h-14 flex items-center justify-center gap-2 text-sm font-black shadow-[0_8px_20px_rgba(198,166,109,0.2)] active:scale-95 transition-all whitespace-nowrap overflow-hidden disabled:opacity-50"
         >
           <Share2 size={18} className="relative z-10" />
-          <span className="relative z-10">分享</span>
+          <span className="relative z-10">{isSigningInvite ? '处理中...' : '分享'}</span>
         </button>
       </div>
 
