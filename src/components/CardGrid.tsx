@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState } from 'react';
 import { Card } from '../App';
 import { CardDetailModal } from './CardDetailModal';
 import supremeImg from 'figma:asset/6651fc0c90390d131f74b014994be51852a71a59.png';
@@ -43,27 +43,12 @@ export function CardGrid({
   // Helper to find card by type
   const getCard = (type: string) => cards.find(c => c.type === type);
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-  // Store grayscale states for each card (whether it should be grayed out)
-  const [grayscaleStates, setGrayscaleStates] = useState<Record<string, boolean>>({});
-
-  // Use useLayoutEffect to ensure the card styles are updated before layout is calculated
-  useLayoutEffect(() => {
-    const updatedStates: Record<string, boolean> = {};
-    cards.forEach((card) => {
-      updatedStates[card.type] = card.count === 0; // If the card is not owned, it should be grayed out
-    });
-    setGrayscaleStates(updatedStates);
-  }, [cards]);
-
   const renderCard = (type: string, bgColor: string, borderColor: string, textColor: string) => {
     const card = getCard(type);
     if (!card) return null;
 
     const imageSrc = cardImages[type];
     const isOwned = card.count > 0;
-    const isGray = grayscaleStates[type];
 
     const content = imageSrc ? (
       <div className="relative w-full aspect-[3/4]">
@@ -72,11 +57,16 @@ export function CardGrid({
           alt={card.name}
           loading="eager"
           decoding="async"
-          className={`w-full h-full object-contain drop-shadow-md transition-all duration-300 will-change-transform ${isGray ? 'grayscale opacity-60' : ''}`}
+          className={`w-full h-full object-contain drop-shadow-md transition-all duration-300 will-change-transform ${!isOwned ? 'grayscale opacity-60' : ''}`}
         />
       </div>
     ) : (
-      <div className={`w-full aspect-[3/4] rounded-xl border-4 flex items-center justify-center shadow-sm ${bgColor} ${borderColor} ${isGray ? 'grayscale opacity-60' : ''}`}>
+      <div className={`
+        w-full aspect-[3/4] rounded-xl border-4 
+        flex items-center justify-center shadow-sm
+        ${bgColor} ${borderColor}
+        ${!isOwned ? 'grayscale opacity-60' : ''}
+      `}>
         <div className={`text-xl font-black leading-tight text-center ${textColor}`}>
           {card.name.split('').map((char, i) => (
             <div key={i}>{char}</div>
@@ -91,13 +81,15 @@ export function CardGrid({
         className="relative group cursor-pointer transition-transform active:scale-95 touch-manipulation"
       >
         {isOwned && (
+          // Replaced blur-xl with shadow for performance
           <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_30px_rgba(250,230,177,0.3)] pointer-events-none" />
         )}
 
-        <div className="relative">
+        <div className={`relative`}>
           {content}
         </div>
 
+        {/* Count Badge */}
         {isOwned && (
           <div className="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-[#ff000e] to-[#c4000b] text-[#ffe8a4] text-[10px] md:text-xs font-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center border border-[#ffe8a4] shadow-lg z-20">
             {card.count}
