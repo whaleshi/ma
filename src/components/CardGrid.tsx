@@ -43,12 +43,17 @@ export function CardGrid({
   // Helper to find card by type
   const getCard = (type: string) => cards.find(c => c.type === type);
 
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
   const renderCard = (type: string, bgColor: string, borderColor: string, textColor: string) => {
     const card = getCard(type);
     if (!card) return null;
 
     const imageSrc = cardImages[type];
     const isOwned = card.count > 0;
+
+    const grayscaleClass = !isOwned ? 'grayscale opacity-60' : '';
+    const iOSClassFix = isIOS && isOwned ? '' : grayscaleClass;
 
     const content = imageSrc ? (
       <div className="relative w-full aspect-[3/4]">
@@ -57,7 +62,7 @@ export function CardGrid({
           alt={card.name}
           loading="eager"
           decoding="async"
-          className={`w-full h-full object-contain drop-shadow-md transition-all duration-300 will-change-transform ${!isOwned ? 'grayscale opacity-60' : ''}`}
+          className={`w-full h-full object-contain drop-shadow-md transition-all duration-300 will-change-transform ${iOSClassFix}`}
         />
       </div>
     ) : (
@@ -65,7 +70,7 @@ export function CardGrid({
         w-full aspect-[3/4] rounded-xl border-4 
         flex items-center justify-center shadow-sm
         ${bgColor} ${borderColor}
-        ${!isOwned ? 'grayscale opacity-60' : ''}
+        ${iOSClassFix}
       `}>
         <div className={`text-xl font-black leading-tight text-center ${textColor}`}>
           {card.name.split('').map((char, i) => (
