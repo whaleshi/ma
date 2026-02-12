@@ -184,8 +184,7 @@ export function CardDetailModal({
 
   // const { address } = useAccount();
 
-  const handleRequest = () => {
-    // 1. 类型映射（用于后端 API 分享链接）
+  const handleRequest = async () => {
     const typeMap: Record<string, string> = {
       supreme: 'supreme',
       red_packet: 'red',
@@ -195,7 +194,6 @@ export function CardDetailModal({
       wealth: 'wealth',
     };
 
-    // 2. 祝福语映射
     const blessingMap: Record<string, string> = {
       supreme: "愿你自带主场，所到之处皆是舞台 🪩",
       red_packet: "愿你今年红包不断，惊喜常在 🫢",
@@ -209,19 +207,34 @@ export function CardDetailModal({
     const blessing = blessingMap[card.type] ?? "一起冲大奖！";
     const shareUrl = `${window.location.origin}/api/share?type=${shareType}`;
     
-    // 3. 组装推文文案 (严格遵守你提供的格式)
-    // 使用 \n\n 保持段落间距
-    const text = `2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆
+    // 组装纯文本内容
+    const mainText = `2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆\n\n求一张「${card.name}」${blessing}\n\n我的钱包 👉 ${address || '--'}`;
 
-  求一张「${card.name}」${blessing}
+    // 1. 优先尝试移动端原生分享
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Goodhorse BNB',
+          text: mainText,
+          url: shareUrl, // 原生分享会自动处理文本和链接的结合
+        });
+        return; // 分享成功，直接返回
+      } catch (err) {
+        console.log('User cancelled or share failed');
+        // 如果用户取消，通常不需要处理，直接退出或回退到 twitter 链接
+      }
+    }
 
-  我的钱包 👉 ${address || '尚未连接钱包'}
-  ${shareUrl}`;
-
-    // 4. Twitter 分享链接编码
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    // 2. 兜底方案：Twitter 跳转
+    // 使用 \n 实现换行，并使用模拟 a 标签点击，比 window.open 更稳定
+    const fullTwitterText = `${mainText}\n${shareUrl}`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullTwitterText)}`;
     
-    window.open(twitterUrl, '_blank');
+    const a = document.createElement('a');
+    a.href = twitterUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.click();
   };
 
   if (!mounted) return null;
