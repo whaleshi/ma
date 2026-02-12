@@ -40,7 +40,6 @@ export function CardGrid({
 }: CardGridProps) {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
-  // Helper to find card by type
   const getCard = (type: string) => cards.find(c => c.type === type);
 
   const renderCard = (type: string, bgColor: string, borderColor: string, textColor: string) => {
@@ -51,13 +50,20 @@ export function CardGrid({
     const isOwned = card.count > 0;
 
     const content = imageSrc ? (
-      <div className="relative w-full aspect-[3/4]">
+      <div className="relative w-full aspect-[3/4] isolation-auto">
         <img
           src={imageSrc}
           alt={card.name}
           loading="eager"
           decoding="async"
-          className={`w-full h-full object-contain drop-shadow-md transition-all duration-300 will-change-transform ${!isOwned ? 'grayscale opacity-60' : ''}`}
+          // 核心修复：添加 transform-gpu，明确指定 grayscale 0 和 100，避免 iOS 渲染歧义
+          className={`w-full h-full object-contain drop-shadow-md transition-all duration-300 transform-gpu ${
+            !isOwned 
+              ? 'grayscale opacity-60 brightness-[0.8]' 
+              : 'grayscale-0 opacity-100'
+          }`}
+          // 兜底 inline style 应对某些顽固的旧版 iOS WebKit
+          style={{ WebkitFilter: !isOwned ? 'grayscale(100%)' : 'grayscale(0%)' }}
         />
       </div>
     ) : (
@@ -78,18 +84,16 @@ export function CardGrid({
     return (
       <div
         onClick={() => setSelectedCard(card)}
-        className="relative group cursor-pointer transition-transform active:scale-95 touch-manipulation"
+        className="relative group cursor-pointer transition-transform active:scale-95 touch-manipulation isolate"
       >
         {isOwned && (
-          // Replaced blur-xl with shadow for performance
           <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-[0_0_30px_rgba(250,230,177,0.3)] pointer-events-none" />
         )}
 
-        <div className={`relative`}>
+        <div className="relative">
           {content}
         </div>
 
-        {/* Count Badge */}
         {isOwned && (
           <div className="absolute -top-1.5 -right-1.5 bg-gradient-to-br from-[#ff000e] to-[#c4000b] text-[#ffe8a4] text-[10px] md:text-xs font-black w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center border border-[#ffe8a4] shadow-lg z-20">
             {card.count}
@@ -102,12 +106,9 @@ export function CardGrid({
   return (
     <>
       <div className="grid grid-cols-3 gap-2 md:gap-4 px-1 md:px-2">
-        {/* Row 1 */}
         {renderCard('supreme', 'bg-[#ff000e]', 'border-[#ff3653]', 'text-[#ffe8a4]')}
         {renderCard('red_packet', 'bg-[#ffe9a3]', 'border-[#ffdc97]', 'text-[#ff9752]')}
         {renderCard('luck', 'bg-[#ffe9a3]', 'border-[#ffdc97]', 'text-[#ff9752]')}
-
-        {/* Row 2 */}
         {renderCard('career', 'bg-[#ffe9a3]', 'border-[#ffdc97]', 'text-[#ff9752]')}
         {renderCard('love', 'bg-[#ffe9a3]', 'border-[#ffdc97]', 'text-[#ff9752]')}
         {renderCard('wealth', 'bg-[#ffe9a3]', 'border-[#ffdc97]', 'text-[#ff9752]')}
