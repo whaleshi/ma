@@ -108,7 +108,7 @@ export default function App() {
   const { address, isConnected } = useAccount();
   const { getReferralCode, clearReferralCode } = useReferral();
   const previousConnectedRef = useRef(false);
-  const contractAddress = "0x1234...7777";
+  const contractAddress = "Coming soon";
   const { data: entryFee } = useEntryFee();
   const { data: chainFreeDraws, refetch: refetchFreeDraws } = useFreeDraws(address, 5000);
   const { data: earnedFreeDraws, refetch: refetchEarnedFreeDraws } = useEarnedFreeDrawsFromReferral(address, 5000);
@@ -629,20 +629,20 @@ export default function App() {
             </h1>
             <div className="mt-4 md:mt-6 flex items-center justify-center gap-2">
               <div
-                onClick={async () => {
-                  const success = await copyToClipboard(contractAddress);
-                  if (success) {
-                    toast.success("复制成功");
-                  } else {
-                    toast.error("复制失败，请手动复制");
-                  }
-                }}
+                // onClick={async () => {
+                //   const success = await copyToClipboard(contractAddress);
+                //   if (success) {
+                //     toast.success("复制成功");
+                //   } else {
+                //     toast.error("复制失败，请手动复制");
+                //   }
+                // }}
                 className="flex items-center gap-2 bg-[#FAE6B1]/10 hover:bg-[#FAE6B1]/20 px-4 py-2 md:px-5 md:py-2.5 rounded-full cursor-pointer transition-colors border border-[#FAE6B1]/20 group active:scale-95 touch-manipulation"
               >
                 <span className="text-[#FAE6B1] text-xs md:text-lg font-bold tracking-widest group-hover:text-[#fff] transition-colors truncate max-w-[150px] md:max-w-none">
                   {contractAddress}
                 </span>
-                <Copy size={14} className="text-[#FAE6B1] group-hover:text-[#fff] transition-colors md:w-4 md:h-4" />
+                {/* <Copy size={14} className="text-[#FAE6B1] group-hover:text-[#fff] transition-colors md:w-4 md:h-4" /> */}
               </div>
             </div>
           </div>

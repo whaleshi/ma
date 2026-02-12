@@ -48,12 +48,12 @@ export function Header({ onOpenHistory, onOpenRewards, onOpenMobileMenu }: Heade
         {/* Desktop Social Icons & History */}
         <div className="hidden md:flex items-center gap-3">
           <div className="flex gap-2">
-            <a href="https://t.me/GoodhorseFun" target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-2xl bg-black/20 flex items-center justify-center hover:bg-black/30 transition-all border border-white/10 hover:border-[#FAE6B1]/50 shadow-lg backdrop-blur-md group active:scale-95">
+            <a href="https://t.me/GoodhorseBNB" target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-2xl bg-black/20 flex items-center justify-center hover:bg-black/30 transition-all border border-white/10 hover:border-[#FAE6B1]/50 shadow-lg backdrop-blur-md group active:scale-95">
               <div className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity">
                 <ImageWithFallback src={imgTelegram} alt="Telegram" className="w-full h-full object-contain filter brightness-0 invert" />
               </div>
             </a>
-            <a href="https://x.com/GoodhorseFun" target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-2xl bg-black/20 flex items-center justify-center hover:bg-black/30 transition-all border border-white/10 hover:border-[#FAE6B1]/50 shadow-lg backdrop-blur-md group active:scale-95">
+            <a href="https://x.com/GoodhorseBNB" target="_blank" rel="noopener noreferrer" className="w-11 h-11 rounded-2xl bg-black/20 flex items-center justify-center hover:bg-black/30 transition-all border border-white/10 hover:border-[#FAE6B1]/50 shadow-lg backdrop-blur-md group active:scale-95">
               <div className="w-5 h-5 opacity-80 group-hover:opacity-100 transition-opacity">
                 <ImageWithFallback src={imgTwitter} alt="Twitter" className="w-full h-full object-contain filter brightness-0 invert" />
               </div>

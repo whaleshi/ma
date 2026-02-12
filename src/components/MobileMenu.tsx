@@ -51,14 +51,14 @@ export function MobileMenu({ isOpen, onClose, onOpenHistory, isWalletConnected }
             </>
           )}
 
-          <a href="https://t.me/GoodhorseFun" target="_blank" rel="noopener noreferrer" className="w-full flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors group">
+          <a href="https://t.me/GoodhorseBNB" target="_blank" rel="noopener noreferrer" className="w-full flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors group">
             <div className="w-10 h-10 rounded-xl bg-[#FAE6B1]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
               <ImageWithFallback src={imgTelegram} alt="Telegram" className="w-5 h-5 object-contain filter brightness-0 invert" />
             </div>
             <span className="text-[#fff9f0] font-bold text-lg">Telegram</span>
           </a>
 
-          <a href="https://x.com/GoodhorseFun" target="_blank" rel="noopener noreferrer" className="w-full flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors group">
+          <a href="https://x.com/GoodhorseBNB" target="_blank" rel="noopener noreferrer" className="w-full flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors group">
             <div className="w-10 h-10 rounded-xl bg-[#FAE6B1]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
               <ImageWithFallback src={imgTwitter} alt="Twitter" className="w-5 h-5 object-contain filter brightness-0 invert" />
             </div>
