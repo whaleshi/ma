@@ -10,7 +10,8 @@ export function RulesSection() {
     "首个合成至尊马的用户可额外独占10%超级大奖",
     "开奖后至尊马持有者按占比瓜分 80% 超级大奖，剩余 20% 滚存到下一期",
     "爱情马 + 事业马 + 好运马 + 发财马 各1张 → 合成至尊马",
-    `新用户免费 4 次，继续抽卡 ${formatEther(entryFee as bigint)} BNB/次`,
+    // 优化点：先判断 entryFee 是否存在，再进行转换
+    `新用户免费 4 次，继续抽卡 ${entryFee ? formatEther(entryFee as bigint) : '--'} BNB/次`,
     "邀请好友付费抽 1 次，你获得 1 次免费机会"
   ];
 
