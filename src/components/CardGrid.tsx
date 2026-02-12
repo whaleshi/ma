@@ -45,14 +45,14 @@ export function CardGrid({
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-  // Track the owned state of each card to apply grayscale dynamically
+  // Store grayscale states for each card (whether it should be grayed out)
   const [grayscaleStates, setGrayscaleStates] = useState<Record<string, boolean>>({});
 
+  // This will update grayscale states based on card ownership on initial render and whenever `cards` change
   useEffect(() => {
-    // Update grayscale state based on card ownership
     const updatedStates: Record<string, boolean> = {};
     cards.forEach((card) => {
-      updatedStates[card.type] = card.count === 0;
+      updatedStates[card.type] = card.count === 0; // If the card is not owned, it should be grayed out
     });
     setGrayscaleStates(updatedStates);
   }, [cards]);
