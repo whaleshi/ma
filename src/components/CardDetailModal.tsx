@@ -166,20 +166,62 @@ export function CardDetailModal({
     })();
   };
 
+  // const handleRequest = () => {
+  //   const typeMap: Record<string, string> = {
+  //     career: 'career',
+  //     love: 'love',
+  //     wealth: 'wealth',
+  //     luck: 'luck',
+  //     red_packet: 'red',
+  //     supreme: 'supreme',
+  //   };
+  //   const shareType = typeMap[card.type] ?? 'default';
+  //   const shareUrl = `${window.location.origin}/api/share?type=${shareType}`;
+  //   const text = `Horse 发生 求一张${card.name}，一起冲大奖！${shareUrl}`;
+  //   const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  //   window.open(url, '_blank');
+  // };
+
+  // const { address } = useAccount();
+
   const handleRequest = () => {
+    // 1. 类型映射（用于后端 API 分享链接）
     const typeMap: Record<string, string> = {
+      supreme: 'supreme',
+      red_packet: 'red',
+      luck: 'luck',
       career: 'career',
       love: 'love',
       wealth: 'wealth',
-      luck: 'luck',
-      red_packet: 'red',
-      supreme: 'supreme',
     };
+
+    // 2. 祝福语映射
+    const blessingMap: Record<string, string> = {
+      supreme: "愿你自带主场，所到之处皆是舞台 🪩",
+      red_packet: "愿你今年红包不断，惊喜常在 🫢",
+      luck: "愿好运像四叶草一样，悄悄但精准地落在你身上 🍀",
+      career: "愿你职场一路开挂，升维不止升职 🤵",
+      love: "愿你遇见双向奔赴，心动不止一次 💓",
+      wealth: "愿你财路清晰、进账稳定、越赚越从容 💰",
+    };
+
     const shareType = typeMap[card.type] ?? 'default';
+    const blessing = blessingMap[card.type] ?? "一起冲大奖！";
     const shareUrl = `${window.location.origin}/api/share?type=${shareType}`;
-    const text = `Horse 发生 求一张${card.name}，一起冲大奖！${shareUrl}`;
-    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    
+    // 3. 组装推文文案 (严格遵守你提供的格式)
+    // 使用 \n\n 保持段落间距
+    const text = `2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆
+
+  求一张「${card.name}」${blessing}
+
+  我的钱包 👉 ${address || '尚未连接钱包'}
+  ${shareUrl}`;
+
+    // 4. Twitter 分享链接编码
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    
+    window.open(twitterUrl, '_blank');
   };
 
   if (!mounted) return null;

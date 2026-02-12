@@ -77,7 +77,7 @@ export function InviteSection() {
     if (!inviteLink) {
       await generateInviteLink();
     }
-    const text = encodeURIComponent(`一起抽马卡，参与大奖！${inviteLink}`);
+    const text = encodeURIComponent(`2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆${inviteLink}`);
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
   };
 
