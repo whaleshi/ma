@@ -75,7 +75,7 @@ export function WinnerHistoryModal({ isOpen, onClose }: WinnerHistoryModalProps)
     if (len === 0n) {
       return map;
     }
-    const firstReward = (total * 10n) / 100n + (total - (total * 10n) / 100n) * 8n / 10n / len;
+    const firstReward = (total * 8n) / 100n + (total - (total * 10n) / 100n) * 8n / 10n / len;
     const othersReward = (total * 90n) / 100n * 8n / 10n / len;
     ids.forEach((id, index) => {
       map.set(id.toString(), index === 0 ? firstReward : othersReward);
