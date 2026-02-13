@@ -8,6 +8,8 @@ import { useAccount, useConfig, useWriteContract } from 'wagmi';
 import { waitForTransactionReceipt } from 'wagmi/actions';
 import { useNftContractAddress } from '../hooks/useLotteryContract';
 import erc1155Abi from '../constant/ERC1155.abi.json';
+import { ChevronDown } from 'lucide-react';
+
 
 interface CardDetailModalProps {
   isOpen: boolean;
@@ -301,12 +303,19 @@ export function CardDetailModal({
                       className="w-full space-y-3"
                     >
                       {transferableTokenIds.length > 1 && (
-                        <div className="relative">
+                        <div className="relative w-full">
                           <select
                             value={selectedTokenId}
                             onChange={(e) => setSelectedTokenId(e.target.value)}
-                            className="w-full bg-white border border-[#FAE6B1] rounded-xl py-3 px-4 text-[#8b0000] focus:outline-none focus:ring-2 focus:ring-[#ff000e]/20 transition-all text-sm appearance-none [&::-ms-expand]:hidden"
-                            style={{ WebkitAppearance: 'none', MozAppearance: 'none', backgroundImage: 'none' }}
+                            // 1. 确保有足够的右侧内边距给箭头留位置 (pr-10)
+                            // 2. cursor-pointer 确保点击区域正确
+                            // 3. text-base 防止 iOS 自动放大页面 (iOS 规定 input 小于 16px 时会强制缩放)
+                            className="w-full bg-white border border-[#FAE6B1] rounded-xl py-3 pl-4 pr-10 text-[#8b0000] focus:outline-none focus:ring-2 focus:ring-[#ff000e]/20 transition-all text-base md:text-sm appearance-none cursor-pointer relative z-10"
+                            style={{ 
+                              WebkitAppearance: 'none', 
+                              MozAppearance: 'none',
+                              backgroundColor: '#ffffff' // 显式设置背景色，防止 iOS 默认透明
+                            }}
                           >
                             <option value="" disabled>
                               选择要赠送的 Token ID
@@ -317,6 +326,11 @@ export function CardDetailModal({
                               </option>
                             ))}
                           </select>
+                          
+                          {/* 4. 手动增加箭头图标，并设置 pointer-events-none 防止挡住点击事件 */}
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none z-20">
+                            <ChevronDown size={18} className="text-[#8b0000] opacity-50" />
+                          </div>
                         </div>
                       )}
                       <div className="relative">
