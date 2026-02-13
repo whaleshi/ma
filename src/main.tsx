@@ -42,8 +42,8 @@ createRoot(document.getElementById("root")!).render(
         })}
       >
         <ReferralProvider>
-          {/* <App /> */}
-          <div style={{width: '100vw', height: '100vh'}} className="flex items-center justify-center">
+          <App />
+          {/* <div style={{width: '100vw', height: '100vh'}} className="flex items-center justify-center">
             <h1 className="text-4xl md:text-7xl font-black tracking-wider whitespace-nowrap will-change-transform flex items-center justify-center gap-1 md:gap-2">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FAE6B1] via-[#ffffff] to-[#FAE6B1] md:bg-[linear-gradient(90deg,#FAE6B1_0%,#C6A66D_40%,#ffffff_50%,#C6A66D_60%,#FAE6B1_100%)] md:animate-shimmer drop-shadow-[0_2px_10px_rgba(198,166,109,0.3)]">
                 集
@@ -64,7 +64,7 @@ createRoot(document.getElementById("root")!).render(
                 卡 · 赢奖池
               </span>
             </h1>
-          </div>
+          </div> */}
         </ReferralProvider>
       </RainbowKitProvider>
     </QueryClientProvider>
