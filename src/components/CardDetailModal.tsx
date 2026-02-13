@@ -303,40 +303,35 @@ export function CardDetailModal({
                       className="w-full space-y-3"
                     >
                       {transferableTokenIds.length > 1 && (
-                        <div className="relative w-full">
-                          <select
-                            value={selectedTokenId}
-                            onChange={(e) => setSelectedTokenId(e.target.value)}
-                            // 关键点 1：防止 motion 拦截触摸事件
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onTouchStart={(e) => e.stopPropagation()}
-                            className="w-full bg-white border border-[#FAE6B1] rounded-xl py-4 pl-4 pr-10 text-[#8b0000] focus:outline-none focus:ring-2 focus:ring-[#ff000e]/20 transition-all text-base appearance-none cursor-pointer relative z-[30]"
-                            style={{ 
-                              // 关键点 2：统一 appearance 写法，消除重复键警告
-                              WebkitAppearance: 'none', 
-                              MozAppearance: 'none',
-                              appearance: 'none',
-                              // 关键点 3：强制 16px 防止 iOS 缩放，设置足够的高度
-                              fontSize: '16px',
-                              minHeight: '48px', 
-                              backgroundColor: '#ffffff',
-                              opacity: 1,
-                              display: 'block' // 确保不是 inline
-                            }}
-                          >
-                            <option value="" disabled>
-                              选择要赠送的 Token ID
-                            </option>
-                            {transferableTokenIds.map((id) => (
-                              <option key={id.toString()} value={id.toString()}>
-                                {id.toString()}
-                              </option>
-                            ))}
-                          </select>
+                        <div className="w-full space-y-2">
+                          <div className="flex justify-between items-center px-1">
+                            <span className="text-xs font-bold text-[#8b0000]/60">选择要赠送的 ID</span>
+                            {/* <span className="text-[10px] px-2 py-0.5 bg-[#8b0000]/5 text-[#8b0000] rounded-full">
+                              持有 {transferableTokenIds.length} 张
+                            </span> */}
+                          </div>
                           
-                          {/* 箭头图标：pointer-events-none 必须加上，否则点到箭头上打不开 */}
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none z-[31] flex items-center justify-center">
-                            <ChevronDown size={18} className="text-[#8b0000] opacity-50" />
+                          <div className="w-full bg-black/5 border border-[#FAE6B1]/50 rounded-xl p-2 max-h-40 overflow-y-auto custom-scrollbar">
+                            <div className="grid grid-cols-3 gap-2">
+                              {transferableTokenIds.map((id) => {
+                                const idStr = id.toString();
+                                const isSelected = selectedTokenId === idStr;
+                                return (
+                                  <button
+                                    key={idStr}
+                                    type="button"
+                                    onClick={() => setSelectedTokenId(idStr)}
+                                    className={`py-2 rounded-lg text-xs font-black transition-all border ${
+                                      isSelected
+                                        ? 'bg-[#8b0000] text-[#FAE6B1] border-[#8b0000] shadow-sm'
+                                        : 'bg-white text-[#8b0000] border-transparent hover:border-[#FAE6B1]'
+                                    }`}
+                                  >
+                                    #{idStr.length > 8 ? `${idStr.slice(0, 4)}...${idStr.slice(-4)}` : idStr}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
                         </div>
                       )}

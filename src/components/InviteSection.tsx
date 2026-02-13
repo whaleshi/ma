@@ -151,7 +151,7 @@ export function InviteSection() {
       </div>
 
       <p className="text-[#fff9f0]/50 text-xs text-center font-medium leading-relaxed">
-        每邀请 1 位好友付费抽卡，你获得 <span className="text-[#FAE6B1] font-bold">1 次免费机会</span>（已获得 {earnedFreeDrawsDisplay} 次）
+        每邀请 1 位好友付费抽卡，你获得 <span className="text-[#FAE6B1] font-bold">1 次免费机会</span><br />（已获得 {earnedFreeDrawsDisplay} 次）
       </p>
     </div>
   );

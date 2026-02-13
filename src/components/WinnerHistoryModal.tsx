@@ -75,8 +75,8 @@ export function WinnerHistoryModal({ isOpen, onClose }: WinnerHistoryModalProps)
     if (len === 0n) {
       return map;
     }
-    const firstReward = (total * 10n) / 100n + total / len;
-    const othersReward = (total * 90n) / 100n / len;
+    const firstReward = (total * 10n) / 100n + (total - (total * 10n) / 100n) * 8n / 10n / len;
+    const othersReward = (total * 90n) / 100n * 8n / 10n / len;
     ids.forEach((id, index) => {
       map.set(id.toString(), index === 0 ? firstReward : othersReward);
     });
@@ -84,7 +84,7 @@ export function WinnerHistoryModal({ isOpen, onClose }: WinnerHistoryModalProps)
   }, [revenue3, legendTokenIds]);
 
   const winners = useMemo(() => {
-    const list: { id: string; type: 'lucky' | 'legend'; address: string; amount: string; round: string }[] = [];
+    const list: { id: string; type: 'lucky' | 'legend'; address: string; amount: string; rewardAmountWei?: any; round: string }[] = [];
     luckyRewards.forEach((item) => {
       if (item.owner && item.owner !== zeroAddress) {
         list.push({
@@ -105,6 +105,7 @@ export function WinnerHistoryModal({ isOpen, onClose }: WinnerHistoryModalProps)
           type: 'legend',
           address: item.owner,
           amount: formatSmall(formatEther(displayAmount)),
+          rewardAmountWei: item.rewardAmount,
           round: roundDisplay,
         });
       }
@@ -179,7 +180,9 @@ export function WinnerHistoryModal({ isOpen, onClose }: WinnerHistoryModalProps)
                       </div>
                       
                       <div className="flex flex-col items-end">
-                        <span className="text-[10px] text-gray-500 mb-0.5">获得奖励</span>
+                        <span className="text-[10px] text-gray-500 mb-0.5">
+                          {winner.type === 'legend' && winner.rewardAmountWei === 0n ? '预计获得' : '获得奖励'}
+                        </span>
                         <span className="text-[#c4000b] font-black text-lg tracking-tight">
                           {winner.amount} BNB
                         </span>

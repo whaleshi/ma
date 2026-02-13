@@ -91,8 +91,8 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
     if (len === 0n) {
       return map;
     }
-    const firstReward = (total * 10n) / 100n + total / len;
-    const othersReward = (total * 90n) / 100n / len;
+    const firstReward = (total * 10n) / 100n + (total - (total * 10n) / 100n) * 8n / 10n / len;
+    const othersReward = (total * 90n) / 100n * 8n / 10n / len;
     currentLegendIds.forEach((id, index) => {
       map.set(id.toString(), index === 0 ? firstReward : othersReward);
     });
@@ -126,25 +126,12 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
     if (rewards.length === 0) {
       return;
     }
-    logger.log('luckyRewards details', rewards.map((item) => ({
-      tokenId: item.tokenId.toString(),
-      claimed: item.claimed,
-      rewardAmount: item.rewardAmount.toString(),
-    })));
   }, [rewards]);
 
   useEffect(() => {
     if (rounds.length === 0) {
       return;
     }
-    logger.log('legend rounds', rounds.map((r) => r.toString()));
-    logger.log('legend tokenIds', legendTokenIds.map((id) => id.toString()));
-    logger.log('legend rewards', legendRewards.map((item) => ({
-      tokenId: item.tokenId.toString(),
-      owner: item.owner,
-      claimed: item.claimed,
-      rewardAmount: item.rewardAmount.toString(),
-    })));
   }, [rounds, legendTokenIds, legendRewards]);
 
   useEffect(() => {
@@ -159,31 +146,45 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
 
   // Calculate cumulative claimed amount
   const totalClaimedWei = typeof totalRewardsClaimed === 'bigint' ? totalRewardsClaimed : 0n;
-  const toSubscript = (value: number) => {
+ const toSubscript = (value: number) => {
     const map = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'];
     return String(value)
       .split('')
       .map((digit) => map[Number(digit)] ?? digit)
       .join('');
   };
+
   const formatSmall = (value: string) => {
-    if (!value.startsWith('0.')) {
+    if (!value || !value.startsWith('0.')) {
       return value;
     }
+
     const decimals = value.slice(2);
+    // 如果全是 0，直接返回 0
     if (!decimals || /^0+$/.test(decimals)) {
       return '0';
     }
+
     const match = decimals.match(/^(0+)([1-9].*)$/);
     if (!match) {
-      return value;
+      // 这种通常是 0.526 这种没有前导 0 的情况
+      return `0.${decimals.slice(0, 4)}`;
     }
+
     const zeroCount = match[1].length;
-    const rest = match[2].slice(0, 3);
-    if (zeroCount <= 1) {
-      return value;
+    const rest = match[2];
+
+    // 场景 1：0.05269... 这种 zeroCount 为 1 的情况
+    // 或者是 0.5269... 这种 zeroCount 为 0 的情况
+    if (zeroCount <= 2) {
+      // 直接展示 0. 后面四位
+      return `0.${decimals.slice(0, 4)}`;
     }
-    return `0.0${toSubscript(zeroCount)}${rest}`;
+
+    // 场景 2：极小值，如 0.0000526... 这种 zeroCount >= 3 的情况
+    // 展示为 0.0{下标} + 后面 3 位有效数字
+    const subscriptRest = rest.slice(0, 3);
+    return `0.0${toSubscript(zeroCount)}${subscriptRest}`;
   };
   const totalClaimedDisplay = formatSmall(formatEther(totalClaimedWei));
 
@@ -341,7 +342,7 @@ export function RewardsModal({ isOpen, onClose }: RewardsModalProps) {
                           {getRewardLabel(reward.type)}
                         </span>
                       </div>
-                      <div className="text-[#d92323] font-black text-base mt-1">+{formatSmall(reward.amount)} BNB</div>
+                      <div className="text-[#d92323] font-black text-base mt-1">{reward.type === 'grand_prize' && reward.rewardAmountWei === 0n ? '≈' : '+'}{formatSmall(reward.amount)} BNB</div>
                     </div>
                   </div>
 
