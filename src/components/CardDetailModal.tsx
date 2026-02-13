@@ -307,14 +307,21 @@ export function CardDetailModal({
                           <select
                             value={selectedTokenId}
                             onChange={(e) => setSelectedTokenId(e.target.value)}
-                            // 1. 确保有足够的右侧内边距给箭头留位置 (pr-10)
-                            // 2. cursor-pointer 确保点击区域正确
-                            // 3. text-base 防止 iOS 自动放大页面 (iOS 规定 input 小于 16px 时会强制缩放)
-                            className="w-full bg-white border border-[#FAE6B1] rounded-xl py-3 pl-4 pr-10 text-[#8b0000] focus:outline-none focus:ring-2 focus:ring-[#ff000e]/20 transition-all text-base md:text-sm appearance-none cursor-pointer relative z-10"
+                            // 关键点 1：防止 motion 拦截触摸事件
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onTouchStart={(e) => e.stopPropagation()}
+                            className="w-full bg-white border border-[#FAE6B1] rounded-xl py-4 pl-4 pr-10 text-[#8b0000] focus:outline-none focus:ring-2 focus:ring-[#ff000e]/20 transition-all text-base appearance-none cursor-pointer relative z-[30]"
                             style={{ 
+                              // 关键点 2：统一 appearance 写法，消除重复键警告
                               WebkitAppearance: 'none', 
                               MozAppearance: 'none',
-                              backgroundColor: '#ffffff' // 显式设置背景色，防止 iOS 默认透明
+                              appearance: 'none',
+                              // 关键点 3：强制 16px 防止 iOS 缩放，设置足够的高度
+                              fontSize: '16px',
+                              minHeight: '48px', 
+                              backgroundColor: '#ffffff',
+                              opacity: 1,
+                              display: 'block' // 确保不是 inline
                             }}
                           >
                             <option value="" disabled>
@@ -327,8 +334,8 @@ export function CardDetailModal({
                             ))}
                           </select>
                           
-                          {/* 4. 手动增加箭头图标，并设置 pointer-events-none 防止挡住点击事件 */}
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none z-20">
+                          {/* 箭头图标：pointer-events-none 必须加上，否则点到箭头上打不开 */}
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none z-[31] flex items-center justify-center">
                             <ChevronDown size={18} className="text-[#8b0000] opacity-50" />
                           </div>
                         </div>
