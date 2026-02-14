@@ -30,8 +30,8 @@ export const CONTRACT_ADDRESSES = {
     REFERRAL: "0x11fC1B931Aa90e954BB256A2319d0397bb57D1b7",
   },
   mainnet: {
-    LOTTERY: "0xb13fc9dA2a0488890B4fec429b74DF802508bD22", // TODO: Replace with actual mainnet address
-    REFERRAL: "0x793084b9AA447Dd5868D757392Fd256648d9605D", // TODO: Replace with actual mainnet address
+    LOTTERY: "0xc6E26b98Ea4002D848f033048Bc3b3EC7e80a95d", // TODO: Replace with actual mainnet address
+    REFERRAL: "0x8973489C3dc3522306fE76473495D59C0716B0eE", // TODO: Replace with actual mainnet address
   },
 } as const;
 
