@@ -119,23 +119,30 @@ export default function App() {
   const previousConnectedRef = useRef(false);
   const contractAddress = "Horse发生 CA Coming Soon";
   const { data: entryFee } = useEntryFee();
-  const { data: chainFreeDraws, refetch: refetchFreeDraws } = useFreeDraws(address, 5000);
-  const { data: earnedFreeDraws, refetch: refetchEarnedFreeDraws } = useEarnedFreeDrawsFromReferral(address, 5000);
-  const { data: referralInviter, refetch: refetchReferralInfo } = useReferralInfo(address, 5000);
+
+  // 用户相关数据：只在需要时手动刷新，不自动轮询
+  const { data: chainFreeDraws, refetch: refetchFreeDraws } = useFreeDraws(address);
+  const { data: earnedFreeDraws, refetch: refetchEarnedFreeDraws } = useEarnedFreeDrawsFromReferral(address);
+  const { data: referralInviter, refetch: refetchReferralInfo } = useReferralInfo(address);
+
   const { data: commonToRareRatio } = useCommonToRareRatio();
   const { payLottery } = usePayLottery();
   const { claimLottery } = useClaimLottery();
   const { checkStatus: checkPendingLottery, refetch: refetchCommitment } = useCheckPendingLottery(address);
   const { composeRare } = useComposeRare();
   const { composeLegend } = useComposeLegend();
-  const { balances, refetch: refetchBalances } = useUserNftBalances(address, 5000);
-  const { data: userTokenIds, refetch: refetchUserTokenIds } = useUserNftTokenIds(address, 5000);
-  const { data: luckyTokenIds, refetch: refetchLuckyTokenIds } = useLuckyTokenIds(5000);
+
+  // NFT 余额：只在需要时手动刷新
+  const { balances, refetch: refetchBalances } = useUserNftBalances(address);
+  const { data: userTokenIds, refetch: refetchUserTokenIds } = useUserNftTokenIds(address);
+
+  // 奖池数据：较慢的刷新频率（30秒）
+  const { data: luckyTokenIds, refetch: refetchLuckyTokenIds } = useLuckyTokenIds(30000);
   const { rewards: luckyRewards, refetch: refetchLuckyRewards } = useLuckyRewardInfos(
     Array.isArray(luckyTokenIds) ? luckyTokenIds : [],
-    5000
+    30000
   );
-  const { data: currentRound } = useCurrentRound(5000);
+  const { data: currentRound } = useCurrentRound(30000);
   const legendRounds = useMemo(() => {
     if (typeof currentRound !== "bigint") {
       return [];
@@ -146,11 +153,13 @@ export default function App() {
     }
     return Array.from({ length: total + 1 }, (_, i) => BigInt(i));
   }, [currentRound]);
+
+  // 传奇奖励：较慢的刷新频率（30秒）
   const { allTokenIds: legendTokenIds, refetch: refetchLegendTokenIds } = useLegendTokenIdsByRounds(
     legendRounds,
-    5000
+    30000
   );
-  const { rewards: legendRewards, refetch: refetchLegendRewards } = useLegendRewardInfos(legendTokenIds, 5000);
+  const { rewards: legendRewards, refetch: refetchLegendRewards } = useLegendRewardInfos(legendTokenIds, 30000);
   const { claimLuckyReward } = useClaimLuckyReward();
 
   // Game State
