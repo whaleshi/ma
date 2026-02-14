@@ -21,7 +21,6 @@ import { copyToClipboard } from './utils/clipboard';
 import { logger } from './utils/logger';
 import { playRedPacketSound, initAudio } from './utils/soundEffects';
 import { decodeTokenId } from './utils/decodeTokenId';
-import { updateOGTags } from './utils/og';
 import { useAccount } from "wagmi";
 import { formatEther } from 'viem';
 import { useBalance } from "wagmi";
@@ -196,17 +195,6 @@ export default function App() {
   const [loadingStatus, setLoadingStatus] = useState<'paying' | 'claiming' | null>(null);
   const [showWrongChainModal, setShowWrongChainModal] = useState(false);
   const hasMountedRef = useRef(false);
-
-  // 根据 URL 参数动态更新 OG 标签（用于分享）
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get('type');
-    const amount = params.get('amount');
-
-    if (type) {
-      updateOGTags(type, amount || undefined);
-    }
-  }, []);
   const hasShownWelcomeRef = useRef(false);
   const connectedThisSessionRef = useRef(false);
   const baseFreeDraws = typeof chainFreeDraws === "bigint" ? Number(chainFreeDraws) : 0;

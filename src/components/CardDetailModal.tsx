@@ -207,7 +207,8 @@ export function CardDetailModal({
 
     const shareType = typeMap[card.type] ?? 'default';
     const blessing = blessingMap[card.type] ?? "一起冲大奖！";
-    const shareUrl = `${window.location.origin}/api/share?type=${shareType}`;
+    const shareUrl = `${window.location.origin}`;
+    // /api/share?type=${shareType}
     
     // 组装纯文本内容
     const mainText = `2026 我在 @GoodhorseBNB 集马卡赢奖励 🏆\n\n求一张「${card.name}」${blessing}\n\n我的钱包 👉 ${address || '--'}`;
