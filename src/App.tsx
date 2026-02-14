@@ -35,8 +35,9 @@ import {
   useClaimLuckyReward,
   useCurrentRound,
   useEarnedFreeDrawsFromReferral,
-  useEnterLottery,
-  useEnterLottery10Times,
+  usePayLottery,
+  useClaimLottery,
+  useCheckPendingLottery,
   useCommonToRareRatio,
   useEntryFee,
   useFreeDraws,
@@ -50,6 +51,8 @@ import {
   useReferralInfo,
   useUserNftBalances,
   useUserNftTokenIds,
+  BLOCKS_LIMIT,
+  CLAIM_TIMEOUT_SECONDS,
 } from "./hooks/useLotteryContract";
 
 // Add global styles for animations
@@ -114,8 +117,9 @@ export default function App() {
   const { data: earnedFreeDraws, refetch: refetchEarnedFreeDraws } = useEarnedFreeDrawsFromReferral(address, 5000);
   const { data: referralInviter, refetch: refetchReferralInfo } = useReferralInfo(address, 5000);
   const { data: commonToRareRatio } = useCommonToRareRatio();
-  const { enterLottery } = useEnterLottery();
-  const { enterLottery10Times } = useEnterLottery10Times();
+  const { payLottery } = usePayLottery();
+  const { claimLottery } = useClaimLottery();
+  const { checkStatus: checkPendingLottery, refetch: refetchCommitment } = useCheckPendingLottery(address);
   const { composeRare } = useComposeRare();
   const { composeLegend } = useComposeLegend();
   const { balances, refetch: refetchBalances } = useUserNftBalances(address, 5000);
@@ -173,6 +177,7 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawLoading, setIsDrawLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState<'paying' | 'claiming' | null>(null);
   const hasMountedRef = useRef(false);
   const hasShownWelcomeRef = useRef(false);
   const connectedThisSessionRef = useRef(false);
@@ -337,22 +342,83 @@ export default function App() {
       return;
     }
 
+    setIsDrawLoading(true);
+
+    // 先检查是否有待领取的抽奖
+    try {
+      const pendingStatus = await checkPendingLottery();
+
+      // 如果有待领取且未过期，先领取
+      if (pendingStatus && pendingStatus.blockNumber > 0n && pendingStatus.canClaim) {
+        setLoadingStatus('claiming');
+        const claimReceipt = await claimLottery(address);
+        logger.log('Auto claim previous lottery receipt', claimReceipt);
+
+        refetchFreeDraws();
+        refetchEarnedFreeDraws();
+        refetchBalances();
+        refetchUserTokenIds();
+        refetchLuckyTokenIds();
+        refetchLegendTokenIds();
+        refetchLuckyRewards();
+        refetchLegendRewards();
+        refetchCommitment();
+
+        const awarded = parseNftAwardedFromReceipt(claimReceipt, address);
+        const redPacketTokenIds = awarded.filter((item) => item.nftType === 5).map((item) => item.tokenId);
+        setPendingRedPacketTokenIds(redPacketTokenIds);
+        const newResults: any = awarded
+          .map((item) => {
+            switch (item.nftType) {
+              case 1:
+                return "career";
+              case 2:
+                return "love";
+              case 3:
+                return "wealth";
+              case 4:
+                return "luck";
+              case 5:
+                return "red_packet";
+              default:
+                return null;
+            }
+          })
+          .filter((item): item is any => item !== null);
+
+        if (newResults.length > 0) {
+          setDrawResults(newResults);
+          setIsDrawModalOpen(true);
+        }
+
+        setIsDrawLoading(false);
+        setLoadingStatus(null);
+        return; // 领取完成后直接返回，不继续新抽奖
+      }
+    } catch (error) {
+      console.error("Check or claim pending lottery failed:", error);
+      // 检查或领取失败，继续新抽奖
+    }
+
     const shouldUseFree = times === 1 && cost === 0;
 
     if (shouldUseFree && totalFreeDraws <= 0) {
       toast.error("暂无免费次数");
+      setIsDrawLoading(false);
       return;
     }
     if (!shouldUseFree && cost === 0) {
       toast.error("仅支持单抽使用免费次数");
+      setIsDrawLoading(false);
       return;
     }
     if (!shouldUseFree && totalFreeDraws > 0) {
       toast.error("请先用完免费次数再进行付费抽卡");
+      setIsDrawLoading(false);
       return;
     }
 
-    setIsDrawLoading(true);
+    setLoadingStatus('paying');
     try {
       const value = times === 10 ? entryFee as any * 10n : shouldUseFree ? 0n : entryFee;
       const zeroAddress = "0x0000000000000000000000000000000000000000";
@@ -370,19 +436,17 @@ export default function App() {
         inviterOnChain,
         usedReferral: !!shouldUseReferral,
       };
-      logger.log('enterLottery params', params);
-      const receipt = times === 10
-        ? await enterLottery10Times(value as any, inviter as `0x${string}`, signature)
-        : await enterLottery(value as any, inviter as `0x${string}`, signature, address);
+      logger.log('payLottery params', params);
 
-      refetchFreeDraws();
-      refetchEarnedFreeDraws();
-      refetchBalances();
-      refetchUserTokenIds();
-      refetchLuckyTokenIds();
-      refetchLegendTokenIds();
-      refetchLuckyRewards();
-      refetchLegendRewards();
+      // 第一步：支付抽奖费用
+      const payReceipt = await payLottery(value as any, inviter as `0x${string}`, signature, address);
+      logger.log('payLottery receipt', payReceipt);
+
+      toast.success("支付成功，正在领取抽奖结果...");
+      setLoadingStatus('claiming');
+
+      refetchCommitment();
+
       const referralState = await refetchReferralInfo();
       const inviterBound = referralState.data && referralState.data !== zeroAddress;
       if (inviterBound) {
@@ -395,38 +459,67 @@ export default function App() {
         clearReferralCode();
       }
 
-      const awarded = parseNftAwardedFromReceipt(receipt, address);
-      const redPacketTokenIds = awarded.filter((item) => item.nftType === 5).map((item) => item.tokenId);
-      setPendingRedPacketTokenIds(redPacketTokenIds);
-      const newResults: any = awarded
-        .map((item) => {
-          switch (item.nftType) {
-            case 1:
-              return "career";
-            case 2:
-              return "love";
-            case 3:
-              return "wealth";
-            case 4:
-              return "luck";
-            case 5:
-              return "red_packet";
-            default:
-              return null;
-          }
-        })
-        .filter((item): item is any => item !== null);
+      // 等待一小段时间让区块确认
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      if (newResults.length === 0) {
-        toast.error("未读取到抽卡结果，请稍后重试");
-        return;
+      // 第二步：自动领取抽奖结果
+      try {
+        const claimReceipt = await claimLottery(address);
+        logger.log('claimLottery receipt', claimReceipt);
+
+        // 清除待领取状态
+        setHasPendingClaim(false);
+        setPendingClaimInfo(null);
+
+        refetchFreeDraws();
+        refetchEarnedFreeDraws();
+        refetchBalances();
+        refetchUserTokenIds();
+        refetchLuckyTokenIds();
+        refetchLegendTokenIds();
+        refetchLuckyRewards();
+        refetchLegendRewards();
+        refetchCommitment();
+
+        const awarded = parseNftAwardedFromReceipt(claimReceipt, address);
+        const redPacketTokenIds = awarded.filter((item) => item.nftType === 5).map((item) => item.tokenId);
+        setPendingRedPacketTokenIds(redPacketTokenIds);
+        const newResults: any = awarded
+          .map((item) => {
+            switch (item.nftType) {
+              case 1:
+                return "career";
+              case 2:
+                return "love";
+              case 3:
+                return "wealth";
+              case 4:
+                return "luck";
+              case 5:
+                return "red_packet";
+              default:
+                return null;
+            }
+          })
+          .filter((item): item is any => item !== null);
+
+        if (newResults.length === 0) {
+          toast.error("未读取到抽卡结果，请稍后重试");
+          return;
+        }
+
+        setDrawResults(newResults);
+        setIsDrawModalOpen(true);
+        setLoadingStatus(null);
+      } catch (claimError) {
+        console.error("自动领取失败:", claimError);
+        // 领取失败，保持待领取状态，下次抽奖时会自动重试
+        // 不显示任何提示，用户无感知
       }
-
-      setDrawResults(newResults);
-      setIsDrawModalOpen(true);
     } catch (error) {
       console.error(error);
       toast.error("交易失败或已取消");
+      setLoadingStatus(null);
       return;
     } finally {
       setIsDrawLoading(false);
@@ -545,8 +638,12 @@ export default function App() {
                 <Sparkles className="h-10 w-10 text-[#FAE6B1]" />
               </div>
             </div>
-            <div className="text-[#FAE6B1] text-lg font-black">等待钱包确认</div>
-            <div className="mt-2 text-sm font-medium text-[#fff9f0]/80">交易提交后会自动更新</div>
+            <div className="text-[#FAE6B1] text-lg font-black">
+              {loadingStatus === 'paying' ? '等待钱包确认' : loadingStatus === 'claiming' ? '正在领取结果' : '等待钱包确认'}
+            </div>
+            <div className="mt-2 text-sm font-medium text-[#fff9f0]/80">
+              {loadingStatus === 'paying' ? '请在钱包中确认交易' : loadingStatus === 'claiming' ? '请稍候，正在为您领取抽奖结果' : '交易提交后会自动更新'}
+            </div>
           </div>
         </div>
       )}

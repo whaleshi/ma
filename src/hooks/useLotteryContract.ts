@@ -1,11 +1,17 @@
 import { useMemo } from "react";
 import { decodeEventLog, type Address } from "viem";
-import { simulateContract, waitForTransactionReceipt } from "wagmi/actions";
+import { simulateContract, waitForTransactionReceipt, getBlockNumber } from "wagmi/actions";
 import { useConfig, useReadContract, useReadContracts, useWriteContract } from "wagmi";
 import { CONTRACTS } from "../constant/contracts";
 
 // Common/rare cards use fixed token IDs 1-4; gold/red packet IDs are unique.
 const tokenIds = [1n, 2n, 3n, 4n] as const;
+
+// 每个区块大约2秒，256个区块约512秒（8.5分钟）
+// 为了保守估计，我们使用120秒作为提示时间
+export const BLOCKS_LIMIT = 256n;
+export const ESTIMATED_SECONDS_PER_BLOCK = 2;
+export const CLAIM_TIMEOUT_SECONDS = 120;
 
 export function useEntryFee() {
     return useReadContract({
@@ -162,16 +168,75 @@ export function useUserNftTokenIds(address?: Address, refetchIntervalMs = 0) {
     });
 }
 
-export function useEnterLottery() {
+export function useUserCommitment(address?: Address, refetchIntervalMs = 0) {
+    return useReadContract({
+        address: CONTRACTS.LOTTERY.address,
+        abi: CONTRACTS.LOTTERY.abi,
+        functionName: "userCommitments",
+        args: address ? [address] : undefined,
+        query: {
+            enabled: !!address,
+            refetchInterval: refetchIntervalMs > 0 ? refetchIntervalMs : undefined,
+        },
+    });
+}
+
+export function useCheckPendingLottery(address?: Address) {
+    const wagmiConfig = useConfig();
+    const { data: commitment, refetch } = useUserCommitment(address, 3000);
+
+    const checkStatus = async () => {
+        if (!commitment) return null;
+
+        const commitmentData = commitment as any;
+        const blockNumber = typeof commitmentData?.blockNumber === "bigint"
+            ? commitmentData.blockNumber
+            : typeof commitmentData?.[0] === "bigint"
+            ? commitmentData[0]
+            : 0n;
+        const amount = typeof commitmentData?.amount === "bigint"
+            ? commitmentData.amount
+            : typeof commitmentData?.[1] === "bigint"
+            ? commitmentData[1]
+            : 0n;
+        const isFree = typeof commitmentData?.isFree === "boolean"
+            ? commitmentData.isFree
+            : typeof commitmentData?.[2] === "boolean"
+            ? commitmentData[2]
+            : false;
+
+        if (blockNumber === 0n) {
+            return null;
+        }
+
+        const currentBlock = await getBlockNumber(wagmiConfig);
+        const blockDiff = currentBlock - blockNumber;
+
+        return {
+            blockNumber,
+            amount,
+            isFree,
+            currentBlock,
+            blockDiff,
+            canClaim: blockDiff <= 256n,
+            isExpired: blockDiff > 256n,
+            blocksRemaining: blockDiff <= 256n ? 256n - blockDiff : 0n,
+        };
+    };
+
+    return { commitment, checkStatus, refetch };
+}
+
+export function usePayLottery() {
     const wagmiConfig = useConfig();
     const { writeContractAsync } = useWriteContract();
 
     return {
-        enterLottery: async (value: bigint, inviter: Address, signature: `0x${string}`, account: Address) => {
+        payLottery: async (value: bigint, inviter: Address, signature: `0x${string}`, account: Address) => {
             const simulation = await simulateContract(wagmiConfig, {
                 address: CONTRACTS.LOTTERY.address,
                 abi: CONTRACTS.LOTTERY.abi,
-                functionName: "enterLottery",
+                functionName: "payLottery",
                 args: [inviter, signature],
                 value,
                 account,
@@ -187,22 +252,20 @@ export function useEnterLottery() {
     };
 }
 
-export function useEnterLottery10Times() {
+export function useClaimLottery() {
     const wagmiConfig = useConfig();
     const { writeContractAsync } = useWriteContract();
 
     return {
-        enterLottery10Times: async (value: bigint, inviter: Address, signature: `0x${string}`) => {
+        claimLottery: async (account?: Address) => {
             const simulation = await simulateContract(wagmiConfig, {
                 address: CONTRACTS.LOTTERY.address,
                 abi: CONTRACTS.LOTTERY.abi,
-                functionName: "enterLottery10Times",
-                args: [inviter, signature],
-                value,
-                gas: 1000000n,
+                functionName: "enterLottery",
+                account,
             });
-            const estimatedGas = simulation.request.gas ?? 1000000n;
-            const gas = (estimatedGas * 12n) / 10n;
+            const estimatedGas = simulation.request.gas;
+            const gas = estimatedGas ? (estimatedGas * 12n) / 10n : undefined;
             const hash = await writeContractAsync({
                 ...simulation.request,
                 gas,

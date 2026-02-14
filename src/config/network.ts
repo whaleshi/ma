@@ -26,8 +26,8 @@ export const CURRENT_CHAIN = CHAIN_CONFIG[NETWORK_ENV];
 // Contract addresses for different networks
 export const CONTRACT_ADDRESSES = {
   testnet: {
-    LOTTERY: "0x83aC1bf552595F5C7441663e2D7E3114ae001712",
-    REFERRAL: "0xC7C6638640308F1E20206e25928ad4d31382a7A3",
+    LOTTERY: "0xddB9d29891E9e09Be4148EFbA6F93747Ca17a134",
+    REFERRAL: "0x11fC1B931Aa90e954BB256A2319d0397bb57D1b7",
   },
   mainnet: {
     LOTTERY: "0x5fA031afe78a62fcdAE36392cf761803e65858e2", // TODO: Replace with actual mainnet address
