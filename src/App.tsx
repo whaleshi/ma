@@ -421,7 +421,7 @@ export default function App() {
     }
 
     // 检查余额是否足够（仅付费抽奖需要检查）
-    if (!shouldUseFree) {
+    if (!shouldUseFree && typeof entryFee === 'bigint') {
       const requiredAmount = times === 10 ? entryFee * 10n : entryFee;
       const userBalance = balance?.value ?? 0n;
 
@@ -452,7 +452,7 @@ export default function App() {
       };
       logger.log('payLottery params', params);
 
-      // 第一步：支付抽奖费用
+      // 第一步：支付抽奖费用（免费抽奖 value=0）
       const payReceipt = await payLottery(value as any, inviter as `0x${string}`, signature, address);
       logger.log('payLottery receipt', payReceipt);
 
