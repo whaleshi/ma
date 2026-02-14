@@ -23,6 +23,7 @@ import { playRedPacketSound, initAudio } from './utils/soundEffects';
 import { decodeTokenId } from './utils/decodeTokenId';
 import { useAccount } from "wagmi";
 import { formatEther } from 'viem';
+import { useBalance } from "wagmi";
 import supremeImg from 'figma:asset/6651fc0c90390d131f74b014994be51852a71a59.png';
 import redPacketImg from 'figma:asset/d19a2f3c21c67ce076c2a24d0e2058e33ea5a8a2.png';
 import luckImg from 'figma:asset/876972c509561235a14234ebaeb8a04d4c2f28ae.png';
@@ -109,6 +110,7 @@ export interface Card {
 
 export default function App() {
   const { address, isConnected } = useAccount();
+  const { data: balance } = useBalance({ address });
   const { getReferralCode, clearReferralCode } = useReferral();
   const previousConnectedRef = useRef(false);
   const contractAddress = "Horse发生 CA Coming Soon";
@@ -418,6 +420,18 @@ export default function App() {
       return;
     }
 
+    // 检查余额是否足够（仅付费抽奖需要检查）
+    if (!shouldUseFree) {
+      const requiredAmount = times === 10 ? entryFee * 10n : entryFee;
+      const userBalance = balance?.value ?? 0n;
+
+      if (userBalance < requiredAmount) {
+        toast.error("余额不足，请充值后再试");
+        setIsDrawLoading(false);
+        return;
+      }
+    }
+
     setLoadingStatus('paying');
     try {
       const value = times === 10 ? entryFee as any * 10n : shouldUseFree ? 0n : entryFee;
@@ -467,10 +481,6 @@ export default function App() {
         const claimReceipt = await claimLottery(address);
         logger.log('claimLottery receipt', claimReceipt);
 
-        // 清除待领取状态
-        setHasPendingClaim(false);
-        setPendingClaimInfo(null);
-
         refetchFreeDraws();
         refetchEarnedFreeDraws();
         refetchBalances();
@@ -513,8 +523,9 @@ export default function App() {
         setLoadingStatus(null);
       } catch (claimError) {
         console.error("自动领取失败:", claimError);
-        // 领取失败，保持待领取状态，下次抽奖时会自动重试
-        // 不显示任何提示，用户无感知
+        // 领取失败，提示用户下次点击抽奖会自动领取
+        toast.info("支付成功！请再次点击抽奖按钮领取结果");
+        setLoadingStatus(null);
       }
     } catch (error) {
       console.error(error);
