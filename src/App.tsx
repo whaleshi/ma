@@ -24,6 +24,8 @@ import { decodeTokenId } from './utils/decodeTokenId';
 import { useAccount } from "wagmi";
 import { formatEther } from 'viem';
 import { useBalance } from "wagmi";
+import { useChainId, useSwitchChain } from "wagmi";
+import { CURRENT_CHAIN } from "./config/network";
 import supremeImg from 'figma:asset/6651fc0c90390d131f74b014994be51852a71a59.png';
 import redPacketImg from 'figma:asset/d19a2f3c21c67ce076c2a24d0e2058e33ea5a8a2.png';
 import luckImg from 'figma:asset/876972c509561235a14234ebaeb8a04d4c2f28ae.png';
@@ -111,6 +113,8 @@ export interface Card {
 export default function App() {
   const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({ address });
+  const chainId = useChainId();
+  const { switchChain } = useSwitchChain();
   const { getReferralCode, clearReferralCode } = useReferral();
   const previousConnectedRef = useRef(false);
   const contractAddress = "Horse发生 CA Coming Soon";
@@ -180,6 +184,7 @@ export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawLoading, setIsDrawLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState<'paying' | 'claiming' | null>(null);
+  const [showWrongChainModal, setShowWrongChainModal] = useState(false);
   const hasMountedRef = useRef(false);
   const hasShownWelcomeRef = useRef(false);
   const connectedThisSessionRef = useRef(false);
@@ -332,6 +337,15 @@ export default function App() {
       setIsWelcomeBonusModalOpen(true);
     }
   }, [totalFreeDraws]);
+
+  // 检测链是否正确
+  // useEffect(() => {
+  //   if (isConnected && chainId !== CURRENT_CHAIN.id) {
+  //     setShowWrongChainModal(true);
+  //   } else {
+  //     setShowWrongChainModal(false);
+  //   }
+  // }, [isConnected, chainId]);
 
   const handleDraw = async (times: number, cost: number) => {
     initAudio(); // Initialize audio context on user interaction
@@ -658,6 +672,44 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Wrong Chain Modal */}
+      {showWrongChainModal && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border-2 border-[#ff6b6b] bg-gradient-to-b from-[#5c0000] to-[#2a0a0a] px-8 py-8 text-center shadow-2xl">
+            <div className="pointer-events-none absolute top-[-20%] left-[-20%] h-[60%] w-[140%] rounded-full bg-[#ff6b6b]/10 blur-[60px]" />
+            <div className="pointer-events-none absolute bottom-[-20%] right-[-20%] h-[60%] w-[140%] rounded-full bg-[#ff0000]/10 blur-[60px]" />
+
+            <div className="relative z-10">
+              <div className="mx-auto mb-6 h-24 w-24 rounded-full bg-gradient-to-br from-[#ff6b6b] to-[#ff0000] p-[3px] shadow-[0_0_40px_rgba(255,107,107,0.5)]">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-[#5c0000]">
+                  <div className="text-6xl">⚠️</div>
+                </div>
+              </div>
+
+              <h2 className="text-[#ff6b6b] text-2xl font-black mb-3">网络错误</h2>
+              <p className="text-[#fff9f0] text-base mb-2">
+                请切换到正确的网络
+              </p>
+              <p className="text-[#FAE6B1] text-lg font-bold mb-6">
+                {CURRENT_CHAIN.name}
+              </p>
+
+              <button
+                onClick={() => switchChain({ chainId: CURRENT_CHAIN.id })}
+                className="w-full px-8 py-4 rounded-full font-black text-lg shadow-lg transition-all bg-gradient-to-r from-[#FAE6B1] to-[#C6A66D] text-[#8b0000] hover:brightness-110 active:scale-95"
+              >
+                切换网络
+              </button>
+
+              <p className="text-[#fff9f0]/60 text-xs mt-4">
+                必须切换到正确的网络才能继续使用
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Toaster
         position="top-center"
         theme="dark"
