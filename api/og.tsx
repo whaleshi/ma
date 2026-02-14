@@ -51,7 +51,7 @@ export default async function handler(req: Request) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get('type') ?? 'default';
   const amount = searchParams.get('amount');
-  const origin = getOrigin(req);
+  const origin = 'https://goodhorse.fun';
 
   const cards: Record<string, { title: string; subtitle: string; image: string; accent: string }> = {
     career: {
