@@ -117,7 +117,7 @@ export default function App() {
   const { switchChain } = useSwitchChain();
   const { getReferralCode, clearReferralCode } = useReferral();
   const previousConnectedRef = useRef(false);
-  const contractAddress = "Horse发生 CA Coming Soon";
+  const contractAddress = "0x1205fc950d41467c961fb0d50aac4eef89327777";
   const { data: entryFee } = useEntryFee();
 
   // 用户相关数据：只在需要时手动刷新，不自动轮询
@@ -798,20 +798,20 @@ export default function App() {
             </h1>
             <div className="mt-4 md:mt-6 flex items-center justify-center gap-2">
               <div
-                // onClick={async () => {
-                //   const success = await copyToClipboard(contractAddress);
-                //   if (success) {
-                //     toast.success("复制成功");
-                //   } else {
-                //     toast.error("复制失败，请手动复制");
-                //   }
-                // }}
+                onClick={async () => {
+                  const success = await copyToClipboard(contractAddress);
+                  if (success) {
+                    toast.success("复制成功");
+                  } else {
+                    toast.error("复制失败，请手动复制");
+                  }
+                }}
                 className="flex items-center gap-2 bg-[#FAE6B1]/10 hover:bg-[#FAE6B1]/20 px-4 py-2 md:px-5 md:py-2.5 rounded-full cursor-pointer transition-colors border border-[#FAE6B1]/20 group active:scale-95 touch-manipulation"
               >
                 <span className="text-[#FAE6B1] text-xs md:text-lg font-bold tracking-widest group-hover:text-[#fff] transition-colors max-w-[150px] md:max-w-none">
-                  {contractAddress}
+                  0x1205...7777
                 </span>
-                {/* <Copy size={14} className="text-[#FAE6B1] group-hover:text-[#fff] transition-colors md:w-4 md:h-4" /> */}
+                <Copy size={14} className="text-[#FAE6B1] group-hover:text-[#fff] transition-colors md:w-4 md:h-4" />
               </div>
             </div>
           </div>
