@@ -116,7 +116,7 @@ export function PrizePool({ redPacketPool, superPool, onOpenWinnerHistory }: Pri
 
           <div className="text-[#5c0000] text-[10px] md:text-xs font-bold mb-1 tracking-widest uppercase opacity-70 whitespace-nowrap">超级大奖</div>
           <div className="text-[#5c0000] text-2xl md:text-3xl font-black mb-1.5 md:mb-2 drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] tracking-tight text-center">{formatSmall(superDisplay)} BNB</div>
-          <div className="text-[#5c0000] text-[10px] font-bold bg-white/20 px-2 py-0.5 md:px-3 md:py-1 rounded-full backdrop-blur-sm border border-white/20 whitespace-nowrap scale-90 md:scale-100 origin-center">2 月 17 日 20:00 开奖</div>
+          <div className="text-[#5c0000] text-[10px] font-bold bg-white/20 px-2 py-0.5 md:px-3 md:py-1 rounded-full backdrop-blur-sm border border-white/20 whitespace-nowrap scale-90 md:scale-100 origin-center">2 月 19 日 20:00 开奖</div>
         </div>
       </div>
 
